@@ -18,7 +18,7 @@ robot.setPoseTool(robot.PoseTool())
 """ ------------- Define Functions --------------- """
 """ ---------------------------------------------- """
 def testMove(transform):
-    robot.MoveJ(T_home, blocking=True)
+    robot.MoveJ(target, blocking=True)
     robot.MoveJ(rdk.Mat(transform.tolist()))
 
 def normalise(v):
@@ -122,17 +122,67 @@ T_grinder = np.array([[ cg_cTheta, -1 * cg_sTheta,     0.000000,   cg_ref_g[0] ]
 
 
 # ------------- Coffee Machine --------------- #
-cm_point_g = np.array([-580.4, -444.7, 350.6])
-cm_ref_g   = np.array([-368.4, -389.0, 350.6])
-cm_diff    = normalise(cm_point_g - cm_ref_g)
+# cm_point_g = np.array([-580.4, -444.7, 350.6])
+# cm_ref_g   = np.array([-368.4, -389.0, 350.6])
+# cm_diff    = normalise(cm_point_g - cm_ref_g)
 
-cm_cTheta = np.dot(cg_diff, yDir)
-cm_sTheta = -1 * np.dot(cg_diff, xDir)
+# cm_cTheta = np.dot(cg_diff, yDir)
+# cm_sTheta = -1 * np.dot(cg_diff, xDir)
 
-T_machine = np.array([[ cm_cTheta, -1 * cm_sTheta,     0.000000,   cm_ref_g[0]],
-                      [ cm_sTheta,      cm_cTheta,     0.000000,   cm_ref_g[1]],
-                      [ 0.0000000,        0.000000,    1.000000,   cm_ref_g[2]],
-                      [ 0.0000000,        0.000000,    0.000000,      1.000000]])
+# T_machine = np.array([[ cm_cTheta, -1 * cm_sTheta,     0.000000,   cm_ref_g[0]],
+#                       [ cm_sTheta,      cm_cTheta,     0.000000,   cm_ref_g[1]],
+#                       [ 0.0000000,        0.000000,    1.000000,   cm_ref_g[2]],
+#                       [ 0.0000000,        0.000000,    0.000000,      1.000000]])
+
+cm_p_g = np.array([-580.4, -444.7, 350.6])
+cm_ref_g = np.array([-368.4, -389.0, 350.6])
+cm_diff = normalise(cm_p_g - cm_ref_g)
+
+
+T_machine = np.array([[    cm_diff[1],     cm_diff[0],     0.000000,   -368.400000],
+     [-cm_diff[0],    cm_diff[1],     0.000000,  -389.000000 ],
+     [0.000000,     0.000000,     1.000000,   350.600000 ],
+     [0.000000,     0.000000,     0.000000,     1.000000 ]])
+### Buttons
+T_machine_button_a_off = np.array([[    0.0,     0.0,     -1.000000,   60],
+     [0.0,    1.0,     0.000000,  92],
+     [1.000000,     0.000000,     0.000000,   -27.90 ],
+     [0.000000,     0.000000,     0.000000,     1.000000 ]])
+
+T_machine_button_a_on = np.array([[    0.0,     0.0,     -1.000000,   60],
+     [0.0,    1.0,     0.000000,  92],
+     [1.000000,     0.000000,     0.000000,   -45 ],
+     [0.000000,     0.000000,     0.000000,     1.000000 ]])     
+
+T_machine_button_b_off = np.array([[    0.0,     0.0,     -1.000000,   60],
+     [0.0,    1.0,     0.000000,  35.25],
+     [1.000000,     0.000000,     0.000000,   -27.90 ],
+     [0.000000,     0.000000,     0.000000,     1.000000 ]])
+
+T_machine_button_b_on = np.array([[    0.0,     0.0,     -1.000000,   60],
+     [0.0,    1.0,     0.000000,  35.25],
+     [1.000000,     0.000000,     0.000000,   -45 ],
+     [0.000000,     0.000000,     0.000000,     1.000000 ]])
+
+T_machine_button_c_off = np.array([[    0.0,     0.0,     -1.000000,   60],
+     [0.0,    1.0,     0.000000,  35.25],
+     [1.000000,     0.000000,     0.000000,   -63 ],
+     [0.000000,     0.000000,     0.000000,     1.000000 ]])
+
+T_machine_button_c_on = np.array([[    0.0,     0.0,     -1.000000,   60],
+     [0.0,    1.0,     0.000000,  35.25],
+     [1.000000,     0.000000,     0.000000,   -80 ],
+     [0.000000,     0.000000,     0.000000,     1.000000 ]])
+
+T_machine_button_c_off = np.array([[    0.0,     0.0,     -1.000000,   60],
+     [0.0,    1.0,     0.000000,  35.25],
+     [1.000000,     0.000000,     0.000000,   -63 ],
+     [0.000000,     0.000000,     0.000000,     1.000000 ]])
+
+T_machine_button_c_on = np.array([[    0.0,     0.0,     -1.000000,   60],
+     [0.0,    1.0,     0.000000,  35.25],
+     [1.000000,     0.000000,     0.000000,   -80 ],
+     [0.000000,     0.000000,     0.000000,     1.000000 ]])
 
 # ------------- Tool stand --------------- #
 alpha_bt = np.arctan(1)-np.arctan(89.1/155.9)
@@ -153,17 +203,25 @@ T_tool_stand = np.array([[    np.cos(alpha_bt),     np.sin(alpha_bt),     0.0000
 #      [0.000000,     0.000000,     1.000000,   19.050000 ],
 #      [0.000000,     0.000000,     0.000000,     1.000000 ]])
 
+# ------------- Grinder Tool --------------- #
+theta_gt = 50*(np.pi/180)
+T_grinder_tool = np.array([[ np.cos(theta_gt),     np.sin(theta_gt),     0.000000,   0.0 ],
+                           [-np.sin(theta_gt),     np.cos(theta_gt),     0.000000,  0.0 ],
+                           [0.000000,    0.000000,     1.000000,   0.0 ],
+                           [0.000000,     0.000000,     0.000000,     1.000000 ]])
+
+
+T_push_button = np.array([[1.000000,     0.0,     0.000000,   0.0 ],
+                          [0.000000,    1.0,     0.000000,  0.0 ],
+                          [0.000000,    0.000000,     1.000000,   102.82 ],
+                          [0.000000,     0.000000,     0.000000,     1.000000 ]])
+
+
 """ ---------------------------------------------- """
 """ ----------- -- Define Motion  - -------------- """
 """ ---------------------------------------------- """
-T_machine_but_b = np.array([[    0.0,     0.0,     -1.000000,   70.67],
-     [0.0,    1.0,     0.000000,  35.25],
-     [1.000000,     0.000000,     0.000000,   -27.90 ],
-     [0.000000,     0.000000,     0.000000,     1.000000 ]])
 
 
-tRaNsFoRm = np.matmul(T_machine,T_machine_but_b)
+transform = T_machine @ T_machine_button_a_on @np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
 
-robot.MoveJ(T_home, blocking=True)
-
-testMove(T_tool_stand)
+testMove(transform)
