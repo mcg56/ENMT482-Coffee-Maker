@@ -125,7 +125,7 @@ cg_diff    = normalise(cg_point_g - cg_ref_g)
 cg_sTheta = np.dot(cg_diff, yDir)
 cg_cTheta = -1 * np.dot(cg_diff, yDir)
 
-T_grinder = np.array([[ cg_cTheta, -1 * cg_sTheta,     0.000000,   cg_ref_g[0] ],
+T_coffee_grinder = np.array([[ cg_cTheta, -1 * cg_sTheta,     0.000000,   cg_ref_g[0] ],
                       [ cg_sTheta,      cg_cTheta,     0.000000,   cg_ref_g[1] ],
                       [  0.000000,       0.000000,     1.000000,   cg_ref_g[2] ],
                       [  0.000000,       0.000000,     0.000000,      1.000000 ]])
@@ -153,15 +153,15 @@ T_grinder_but_2_so = np.array([[ 1.000000,  0.000000,     0.000000,  -80.710000]
                                [ 0.000000,  0.000000,     0.000000,    1.000000]])
 
 
-def grinder_routine():
+def coffee_grinder_routine():
 
     grinder_but_so_angles = np.array([-60.590000, -154.320000, -38.940000, -166.720000, 167.520000, 50.000000])
     grinder_but_intermediate_angles = np.array([-61.780000, -105.740000, -53.830000, -134.870000, 120.500000, -78.640000])
     
-    T_but_1_so = T_grinder @ T_grinder_but_1_so @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
-    T_but_2_so = T_grinder @ T_grinder_but_2_so @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
-    T_but_1_push = T_grinder @ T_grinder_but_1 @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
-    T_but_2_push = T_grinder @ T_grinder_but_2 @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
+    T_but_1_so = T_coffee_grinder @ T_grinder_but_1_so @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
+    T_but_2_so = T_coffee_grinder @ T_grinder_but_2_so @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
+    T_but_1_push = T_coffee_grinder @ T_grinder_but_1 @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
+    T_but_2_push = T_coffee_grinder @ T_grinder_but_2 @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
 
     # Routine
     # robot.MoveJ(target, blocking=True)
@@ -191,32 +191,57 @@ cm_diff    = normalise(cm_point_g - cm_ref_g)
 cm_cTheta = np.dot(cm_diff, yDir)
 cm_sTheta = -1 * np.dot(cm_diff, xDir)
 
-T_machine = np.array([[ cm_cTheta, -1 * cm_sTheta,     0.000000,   cm_ref_g[0]],
+cm_theta = 50/180 * np.pi
+
+T_coffee_machine = np.array([[ cm_cTheta, -1 * cm_sTheta,     0.000000,   cm_ref_g[0]],
                       [ cm_sTheta,      cm_cTheta,     0.000000,   cm_ref_g[1]],
                       [ 0.0000000,        0.000000,    1.000000,   cm_ref_g[2]],
                       [ 0.0000000,        0.000000,    0.000000,      1.000000]])
 
-#region Button Transforms
-T_machine_button_off = np.array([[ 0.0,     0.0,    -1.0,   60.0],
-                                 [ 0.0,     1.0,     0.0,  35.25],
-                                 [ 1.0,     0.0,     0.0,  27.90],
+#region Button Transforms                                 
+T__coffee_machine_button_off = np.array([[ 0.0,     np.cos(cm_theta),     -np.sin(cm_theta),   51],
+                                 [ 0.0,     np.sin(cm_theta),     np.cos(cm_theta),  35.25],
+                                 [ 1.0,     0.0,     0.0,  -30.90],
                                  [ 0.0,     0.0,     0.0,    1.0]])
 
-T_machine_button = np.array([[ 0.0,     0.0,    -1.0,    60.0],
-                                [ 0.0,     1.0,     0.0,   35.25],
-                                [ 1.0,     0.0,     0.0,     -35],
-                                [ 0.0,     0.0,     0.0,     1.0]])
+T__coffee_machine_button_on = np.array([[ 0.0,     np.cos(cm_theta),     -np.sin(cm_theta),   51],
+                                 [ 0.0,     np.sin(cm_theta),     np.cos(cm_theta),  35.25],
+                                 [ 1.0,     0.0,     0.0,  -44.0],
+                                 [ 0.0,     0.0,     0.0,    1.0]])
 
-T_machine_button_on = np.array([[ 0.0,     0.0,    -1.0,    55.0],
-                                [ 0.0,     1.0,     0.0,   35.25],
-                                [ 1.0,     0.0,     0.0,     -45],
-                                [ 0.0,     0.0,     0.0,     1.0]])
+T_machine_button_so = np.array([[ 0.0,     np.cos(cm_theta),     -np.sin(cm_theta),   60],
+                                 [ 0.0,     np.sin(cm_theta),     np.cos(cm_theta),  35.25],
+                                 [ 1.0,     0.0,     0.0,  -38.0],
+                                 [ 0.0,     0.0,     0.0,    1.0]])
 
-T_machine_button_off = np.array([[ 0.0,     0.0,    -1.0,    60.0],
-                                [ 0.0,     1.0,     0.0,   35.25],
-                                [ 1.0,     0.0,     0.0,     -45],
-                                [ 0.0,     0.0,     0.0,     1.0]])
+
 #endregion
+def coffee_machine_routine():
+
+    coffee_machine_but_so_angles = np.array([-139.450534, -82.824468, -112.637521, -164.538011, -114.171479, 140.000000])
+    coffee_machine_but_intermediate_angles = np.array([-118.810000, -61.780000, -123.560000, -179.410000, -68.910000, 75.120000])  #-136.630000, -54.650000, -142.570000, -153.640000, -71.090000, 75.120000
+    
+    T_but_off = T_coffee_machine @ T__coffee_machine_button_off @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
+    T_but_on = T_coffee_machine @ T__coffee_machine_button_on @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
+    T_but_so = T_coffee_machine @ T_machine_button_so @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
+
+
+    # Routine
+    # robot.MoveJ(target, blocking=True)
+    RDK.RunProgram("Grinder Tool Attach (Tool Stand)", True)
+    robot.MoveJ(rdk.Mat(coffee_machine_but_intermediate_angles), blocking=True)
+    robot.MoveJ(rdk.Mat(coffee_machine_but_so_angles), blocking=True)
+    robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)
+    time.sleep(4)
+    robot.MoveL(rdk.Mat(T_but_off.tolist()), blocking=True)
+    time.sleep(4)
+    robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)
+    robot.MoveL(rdk.Mat(T_but_on.tolist()), blocking=True)
+    time.sleep(4)
+    robot.MoveJ(rdk.Mat(coffee_machine_but_intermediate_angles), blocking=True)
+    RDK.RunProgram("Grinder Tool Detach (Tool Stand)", True)
+
+
 #endregion
 
 # ------------- Tool Stand --------------- #
@@ -260,10 +285,6 @@ T_push_button = np.array([[1.000000,     0.0,     0.000000,   0.0 ],
 """ ---------------------------------------------- """
 # ------------- Align with coffee machine buttons --------------- #
 #region Align with coffee machine buttons
-transform1 = T_machine @ T_machine_button @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_grinder_tool)
-
-
-
 
 #endregion
 
@@ -275,16 +296,17 @@ T_grinder_place_tool_l = np.array([[ 1.000000,     0.000000,     0.000000,   157
                                     [0.000000,     0.000000,     0.000000,     1.000000 ]])
 
 
-T_grinder_place_tool_g = np.matmul(T_grinder, T_grinder_place_tool_l)
+T_grinder_place_tool_g = np.matmul(T_coffee_grinder, T_grinder_place_tool_l)
 
 
 #endregion
 
 def main():
     
-    robot.MoveJ(target, blocking=True)
-    grinder_routine()
-    robot.MoveJ(target, blocking=True)
+    # robot.MoveJ(target, blocking=True)
+    # coffee_grinder_routine()
+    # robot.MoveJ(target, blocking=True)
+    coffee_machine_routine()
 
 
 if __name__ == '__main__':
