@@ -188,6 +188,24 @@ def coffee_grinder_place_portafilter_routine():
     robot.MoveJ(rdk.Mat((T_grinder_place_tool_final).tolist()))
 
 #endregion
+
+def coffee_grinder_latch_routine():
+
+    latch_align = np.array([-181.514191, -85.515077, 227.735903, -133.465121, -120.965899, 144.530984])
+    latch_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
+
+    T_head_pos = T_tool_stand @ T_twist_lock_pos @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+    T_head_rot = T_tool_stand @ T_twist_lock_rotate @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+    T_head_rot1 = T_tool_stand @ T_twist_lock_rotate1 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+    T_head_rot2 = T_tool_stand @ T_twist_lock_rotate2 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+
+    # Routine
+    # robot.MoveJ(target, blocking=True)
+    RDK.RunProgram("Grinder Tool Attach (Tool Stand)", True)
+    # robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
+
+    # RDK.RunProgram("Grinder Tool Detach (Tool Stand)", True)
+
 #endregion
 
 # ------------- Coffee Machine --------------- #
@@ -254,40 +272,32 @@ def coffee_machine_button_routine():
 def coffee_machine_portafilter_routine():
 
     twist_lock_align = np.array([-181.514191, -85.515077, 227.735903, -133.465121, -120.965899, 144.530984])
-    # coffee_machine_but_intermediate_angles = np.array([-118.810000, -61.780000, -123.560000, -179.410000, -68.910000, 75.120000]) 
+    twist_lock_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
 
     T_head_pos = T_tool_stand @ T_twist_lock_pos @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
     T_head_rot = T_tool_stand @ T_twist_lock_rotate @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+    T_head_rot1 = T_tool_stand @ T_twist_lock_rotate1 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
     T_head_rot2 = T_tool_stand @ T_twist_lock_rotate2 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-
-    print(T_pf_head)
 
     # Routine
     # robot.MoveJ(target, blocking=True)
     RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
+    robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
     # robot.MoveJ(rdk.Mat(twist_lock_align), blocking=True)
     robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
     time.sleep(1)
-
     robot.MoveJ(rdk.Mat(T_head_rot.tolist()), blocking=True)
     time.sleep(1)
-    robot.MoveJ(rdk.Mat(T_head_rot2.tolist()), blocking=True)
-
-    # robot.MoveC(rdk.Mat(T_head_rot.tolist()),rdk.Mat(T_head_rot2.tolist()), blocking=True)
-
-    # robot.MoveJ(rdk.Mat(coffee_machine_but_intermediate_angles), blocking=True)
-    # robot.MoveJ(rdk.Mat(twist_lock_align), blocking=True)
-    # robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)
-    # time.sleep(4)
-    # robot.MoveL(rdk.Mat(T_but_off.tolist()), blocking=True)
-    # time.sleep(4)
-    # robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)
-    # robot.MoveL(rdk.Mat(T_but_on.tolist()), blocking=True)
-    # time.sleep(4)
-    # robot.MoveJ(rdk.Mat(coffee_machine_but_intermediate_angles), blocking=True)
-    # RDK.RunProgram("Grinder Tool Detach (Tool Stand)", True)
+    robot.MoveC(rdk.Mat(T_head_rot1.tolist()),rdk.Mat(T_head_rot2.tolist()), blocking=True)
+    time.sleep(1)
+    robot.MoveC(rdk.Mat(T_head_rot1.tolist()),rdk.Mat(T_head_rot.tolist()), blocking=True)
+    robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
+    robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
+    RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
 
 #endregion
+
+
 #endregion
 
 # ------------- Tool Stand --------------- #
@@ -328,6 +338,12 @@ T_twist_lock_rotate = np.array([[ 0.0,     0.0,     -1.000000,   14.90 ],
 twist_lock_alpha = -135/180 * np.pi
 T_twist_lock_rotate2 = np.array([[ 0.0,     np.cos(twist_lock_alpha),     np.sin(twist_lock_alpha),   14.90 ],
                            [0.0,     -np.sin(twist_lock_alpha),     np.cos(twist_lock_alpha),  64.9 ],
+                           [1.000000,    0.000000,     0.000000,   201.0 ],
+                           [0.000000,     0.000000,     0.000000,     1.000000 ]])
+
+twist_lock_alpha2 = -112.5/180 * np.pi
+T_twist_lock_rotate1 = np.array([[ 0.0,     np.cos(twist_lock_alpha2),     np.sin(twist_lock_alpha2),   14.90 ],
+                           [0.0,     -np.sin(twist_lock_alpha2),     np.cos(twist_lock_alpha2),  64.9 ],
                            [1.000000,    0.000000,     0.000000,   201.0 ],
                            [0.000000,     0.000000,     0.000000,     1.000000 ]])
 
@@ -391,8 +407,9 @@ def main():
     # coffee_grinder_routine()
     # robot.MoveJ(target, blocking=True)
     # coffee_machine_button_routine()
+    coffee_grinder_latch_routine()
     # coffee_machine_portafilter_routine()
-    coffee_grinder_place_portafilter_routine()
+    # coffee_grinder_place_portafilter_routine()
 
 
 if __name__ == '__main__':
