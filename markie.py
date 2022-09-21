@@ -137,6 +137,11 @@ T_grinder_but_2_so = np.array([[ 1.000000,  0.000000,     0.000000,  -80.710000]
                                [ 0.000000,  0.000000,     0.000000,    1.000000]])
 
 # Grinder latch 
+T_grinder_latch_so = np.array([[ 0.000000,  0.000000,     -1.000000,  -45.820000],
+                               [ 1.000000,  0.000000,    0.000000,   83.8000],
+                               [ 0.000000,  -1.000000,     0.000000, -153.680000],
+                               [ 0.000000,  0.000000,     0.000000,    1.000000]])
+
 T_grinder_latch = np.array([[ 0.000000,  0.000000,     -1.000000,  -35.820000],
                                [ 1.000000,  0.000000,    0.000000,   83.8000],
                                [ 0.000000,  -1.000000,     0.000000, -153.680000],
@@ -207,9 +212,10 @@ def coffee_grinder_place_portafilter_routine():
 
 def coffee_grinder_latch_routine():
 
-    latch_align = np.array([-43.845931, -112.513247, -102.389243, -145.097511, -88.849019, -130.000000])
+    latch_align = np.array([-43.291130, -113.536843, -100.838648, -145.624508, -88.295703, -130.000000])
     latch_intermediate_angles = np.array([-74.850000, -95.050000, -84.210000, -129.810000, -3.940000, -147.750000]) 
 
+    T_latch_pos_so = T_grinder @ T_grinder_latch_so @ np.linalg.inv(T_pully_bit) @ np.linalg.inv(T_tool_rot)
     T_latch_pos = T_grinder @ T_grinder_latch @ np.linalg.inv(T_pully_bit) @ np.linalg.inv(T_tool_rot)
     T_latch_pos_1 = T_grinder @ T_grinder_latch_1 @ np.linalg.inv(T_pully_bit) @ np.linalg.inv(T_tool_rot)
     T_latch_pos_2 = T_grinder @ T_grinder_latch_2 @ np.linalg.inv(T_pully_bit) @ np.linalg.inv(T_tool_rot)
@@ -220,6 +226,7 @@ def coffee_grinder_latch_routine():
     RDK.RunProgram("Grinder Tool Attach (Tool Stand)", True)
     robot.MoveJ(rdk.Mat(latch_intermediate_angles), blocking=True)
     robot.MoveJ(rdk.Mat(latch_align), blocking=True)
+    robot.MoveJ(rdk.Mat((T_latch_pos_so).tolist()), blocking=True)
     robot.MoveJ(rdk.Mat((T_latch_pos).tolist()), blocking=True)
     robot.MoveC(rdk.Mat((T_latch_pos_1).tolist()), rdk.Mat((T_latch_pos_2).tolist()), blocking=True)
     time.sleep(1)
@@ -232,9 +239,9 @@ def coffee_grinder_latch_routine():
     robot.MoveC(rdk.Mat((T_latch_pos_1).tolist()), rdk.Mat((T_latch_pos_2).tolist()), blocking=True)
     time.sleep(1)
     robot.MoveC(rdk.Mat((T_latch_pos_1).tolist()), rdk.Mat((T_latch_pos).tolist()), blocking=True)
+    robot.MoveJ(rdk.Mat((T_latch_pos_so).tolist()), blocking=True)
     robot.MoveJ(rdk.Mat(latch_align), blocking=True)
     robot.MoveJ(rdk.Mat(latch_intermediate_angles), blocking=True)
-
     RDK.RunProgram("Grinder Tool Detach (Tool Stand)", True)
 
 #endregion
