@@ -136,6 +136,22 @@ T_grinder_but_2_so = np.array([[ 1.000000,  0.000000,     0.000000,  -80.710000]
                                [ 0.000000,  1.000000,     0.000000, -227.680000],
                                [ 0.000000,  0.000000,     0.000000,    1.000000]])
 
+# Grinder latch 
+T_grinder_latch = np.array([[ 0.000000,  0.000000,     -1.000000,  -35.820000],
+                               [ 1.000000,  0.000000,    0.000000,   83.8000],
+                               [ 0.000000,  -1.000000,     0.000000, -153.680000],
+                               [ 0.000000,  0.000000,     0.000000,    1.000000]])
+
+T_grinder_latch_1 = np.array([[ 0.000000,  0.000000,     -1.000000,  15.820000],
+                               [ 1.000000,  0.000000,    0.000000,   95.8000],
+                               [ 0.000000,  -1.000000,     0.000000, -153.680000],
+                               [ 0.000000,  0.000000,     0.000000,    1.000000]])
+
+T_grinder_latch_2 = np.array([[ 0.000000,  0.000000,     -1.000000,  35.820000],
+                               [ 1.000000,  0.000000,    0.000000,   80.8000],
+                               [ 0.000000,  -1.000000,     0.000000, -153.680000],
+                               [ 0.000000,  0.000000,     0.000000,    1.000000]])
+
 # Grinder base of portafilter tool
 T_grinder_place_pf_base_l = np.array([[ 0.000000,     0.000000,     -1.000000,   157.61 ],
                                         [0.000000,     1.000000,     0.000000,  0 ],
@@ -191,20 +207,35 @@ def coffee_grinder_place_portafilter_routine():
 
 def coffee_grinder_latch_routine():
 
-    latch_align = np.array([-181.514191, -85.515077, 227.735903, -133.465121, -120.965899, 144.530984])
-    latch_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
+    latch_align = np.array([-43.845931, -112.513247, -102.389243, -145.097511, -88.849019, -130.000000])
+    latch_intermediate_angles = np.array([-74.850000, -95.050000, -84.210000, -129.810000, -3.940000, -147.750000]) 
 
-    T_head_pos = T_tool_stand @ T_twist_lock_pos @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-    T_head_rot = T_tool_stand @ T_twist_lock_rotate @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-    T_head_rot1 = T_tool_stand @ T_twist_lock_rotate1 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-    T_head_rot2 = T_tool_stand @ T_twist_lock_rotate2 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+    T_latch_pos = T_grinder @ T_grinder_latch @ np.linalg.inv(T_pully_bit) @ np.linalg.inv(T_tool_rot)
+    T_latch_pos_1 = T_grinder @ T_grinder_latch_1 @ np.linalg.inv(T_pully_bit) @ np.linalg.inv(T_tool_rot)
+    T_latch_pos_2 = T_grinder @ T_grinder_latch_2 @ np.linalg.inv(T_pully_bit) @ np.linalg.inv(T_tool_rot)
+
 
     # Routine
-    # robot.MoveJ(target, blocking=True)
+    robot.MoveJ(target, blocking=True)
     RDK.RunProgram("Grinder Tool Attach (Tool Stand)", True)
-    # robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
+    robot.MoveJ(rdk.Mat(latch_intermediate_angles), blocking=True)
+    robot.MoveJ(rdk.Mat(latch_align), blocking=True)
+    robot.MoveJ(rdk.Mat((T_latch_pos).tolist()), blocking=True)
+    robot.MoveC(rdk.Mat((T_latch_pos_1).tolist()), rdk.Mat((T_latch_pos_2).tolist()), blocking=True)
+    time.sleep(1)
+    robot.MoveC(rdk.Mat((T_latch_pos_1).tolist()), rdk.Mat((T_latch_pos).tolist()), blocking=True)
+    time.sleep(1)
+    robot.MoveC(rdk.Mat((T_latch_pos_1).tolist()), rdk.Mat((T_latch_pos_2).tolist()), blocking=True)
+    time.sleep(1)
+    robot.MoveC(rdk.Mat((T_latch_pos_1).tolist()), rdk.Mat((T_latch_pos).tolist()), blocking=True)
+    time.sleep(1)
+    robot.MoveC(rdk.Mat((T_latch_pos_1).tolist()), rdk.Mat((T_latch_pos_2).tolist()), blocking=True)
+    time.sleep(1)
+    robot.MoveC(rdk.Mat((T_latch_pos_1).tolist()), rdk.Mat((T_latch_pos).tolist()), blocking=True)
+    robot.MoveJ(rdk.Mat(latch_align), blocking=True)
+    robot.MoveJ(rdk.Mat(latch_intermediate_angles), blocking=True)
 
-    # RDK.RunProgram("Grinder Tool Detach (Tool Stand)", True)
+    RDK.RunProgram("Grinder Tool Detach (Tool Stand)", True)
 
 #endregion
 
@@ -364,6 +395,11 @@ T_push_button = np.array([[1.000000,     0.0,     0.000000,   0.0 ],
                           [0.000000,    1.0,     0.000000,  0.0 ],
                           [0.000000,    .000000,     1.000000,   102.82 ],
                           [0.000000,     0.000000,     0.000000,     1.000000 ]])
+
+T_pully_bit = np.array([[1.000000,     0.0,     0.000000,   -45.0 ],
+                        [0.000000,    1.0,     0.000000,  0.0 ],
+                        [0.000000,    .000000,     1.000000,   67.06 ],
+                        [0.000000,     0.000000,     0.000000,     1.000000 ]])
 #endregion
 
 # ------------- Porta Filter Tool --------------- #
