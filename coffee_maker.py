@@ -150,7 +150,7 @@ T_grinder_place_pf_head_l = np.array([[ 0.000000,     0.000000,    -1.000000,   
                                                [ 0.000000,     0.000000,     0.000000,          1.000000 ]])
 
 # Grinder portafilter entrance position
-cg_pf_entrance_l = np.array([180, 0, -150])
+cg_pf_entrance_l = np.array([180, 0, -170])
 T_grinder_pf_entrance_l = np.array([[ 0.0,     0.0,    -1.0,  cg_pf_entrance_l[0]],
                                     [ 0.0,     1.0,     0.0,  cg_pf_entrance_l[1]],
                                     [ 1.0,     0.0,     0.0,  cg_pf_entrance_l[2]],
@@ -209,22 +209,31 @@ def coffee_grinder_routine():
     # robot.MoveJ(target, blocking=True)
 
 def coffee_grinder_place_portafilter_routine():
+    pose_grinder_pf_pickup_transition = np.array([-71.520000, -67.360000, -104.480000, -99.970000, 8.080000, -10.480000])
+    pose_grinder_pf_entrance_transition = np.array([-2.087809, -76.812134, -154.002466, -118.968245, -47.681912, 133.081316])
+    pose_grinder_pf_drop_off_transition = np.array([-16.170000, -100.110000, -148.810000, -101.540000, -60.630000, 135.160000])
+
     T_grinder_place_pf_entrance = T_grinder @ T_grinder_pf_entrance_l @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
     T_grinder_place_pf_tilt1 = T_grinder @ T_grinder_place_pf_head_l @ T_grinder_pf_tilt1_l @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
     T_grinder_place_pf_tilt2_wo = T_grinder @ T_grinder_place_pf_head_l @ T_grinder_pf_tilt2_wo_l @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
     T_grinder_place_tool_final = T_grinder @  T_grinder_place_pf_base_l @ np.linalg.inv(T_pf_base) @ np.linalg.inv(T_tool_rot)
 
-
     robot.MoveJ(T_home, blocking=True)
     RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
-    robot.MoveJ(T_home, blocking=True)
     time.sleep(1)
+    robot.MoveJ(rdk.Mat(pose_grinder_pf_pickup_transition))
+    robot.MoveJ(rdk.Mat(pose_grinder_pf_entrance_transition))
     robot.MoveJ(rdk.Mat(T_grinder_place_pf_entrance.tolist()))
     time.sleep(1)
     robot.MoveL(rdk.Mat(T_grinder_place_pf_tilt1.tolist()))
     time.sleep(1)
     robot.MoveC(rdk.Mat(T_grinder_place_pf_tilt2_wo.tolist()), rdk.Mat(T_grinder_place_tool_final.tolist()))
     time.sleep(1)
+    RDK.RunProgram("Portafilter Tool Detach (Grinder)", True)
+    robot.MoveJ(rdk.Mat(pose_grinder_pf_drop_off_transition))
+    time.sleep(1)
+    robot.MoveJ(T_home, blocking=True)
+
 
 #endregion
 #endregion
