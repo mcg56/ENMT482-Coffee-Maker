@@ -179,7 +179,7 @@ T_grinder_latch_2 = np.array([[ 0.0,   0.0,  -1.0,   cg_latch2_l[0] + cg_latch2_
 #region Portafilter Tranforms
 # Grinder base of portafilter tool
 cg_pf_base_l = np.array([157.61, 0.0, -250.45])
-cg_pf_base_adj = np.array([5, -0.25, 0]) 
+cg_pf_base_adj = np.array([2.5, -0.25, -3.5]) 
 T_grinder_place_pf_base_l = np.array([[ 0.0,  0.0, -1.0,   cg_pf_base_l[0] + cg_pf_base_adj[0] ],
                                       [ 0.0,  1.0,  0.0,   cg_pf_base_l[1] + cg_pf_base_adj[1] ],
                                       [ 1.0,  0.0,  0.0,   cg_pf_base_l[2] + cg_pf_base_adj[2] ],
@@ -187,7 +187,7 @@ T_grinder_place_pf_base_l = np.array([[ 0.0,  0.0, -1.0,   cg_pf_base_l[0] + cg_
                                       
 # Grinder head of portafilter tool
 cg_pf_head_l = np.array([40.41, 0, -200])
-cg_pf_head_adj = np.array([10, 0, 5])
+cg_pf_head_adj = np.array([10, 0, 2])
 T_grinder_place_pf_head_l = np.array([[ 0.0,     0.0,    -1.0,   cg_pf_head_l[0] + cg_pf_head_adj[0] ],
                                       [ 0.0,     1.0,     0.0,   cg_pf_head_l[1] + cg_pf_head_adj[1] ],
                                       [ 1.0,     0.0,     0.0,   cg_pf_head_l[2] + cg_pf_head_adj[2] ],
@@ -195,7 +195,7 @@ T_grinder_place_pf_head_l = np.array([[ 0.0,     0.0,    -1.0,   cg_pf_head_l[0]
 
 # Grinder portafilter entrance position
 cg_pf_entrance_l = np.array([180, 0, -170])
-cg_pf_entrance_adj = np.array([0, 0, -5])
+cg_pf_entrance_adj = np.array([0, 0, 0])
 T_grinder_pf_entrance_l = np.array([[ 0.0,     0.0,    -1.0,  cg_pf_entrance_l[0] + cg_pf_entrance_adj[0] ],
                                     [ 0.0,     1.0,     0.0,  cg_pf_entrance_l[1] + cg_pf_entrance_adj[1] ],
                                     [ 1.0,     0.0,     0.0,  cg_pf_entrance_l[2] + cg_pf_entrance_adj[2] ],
@@ -216,7 +216,7 @@ T_grinder_pf_tilt2_l = np.array([[     np.cos(cg_pf_head_theta2),     0.0,  np.s
                                  [                           0.0,     0.0,                        0.0,   1.0 ]])
 
 # Grinder portafilter intermediate circular point
-cg_offset_dist = np.array([0, 0, -10])
+cg_offset_dist = np.array([0, 0, -3])
 T_grinder_pf_int_wo_l   = np.array([[ 1.0,     0.0,     0.0,   cg_offset_dist[0] ],
                                     [ 0.0,     1.0,     0.0,   cg_offset_dist[1] ],
                                     [ 0.0,     0.0,     1.0,   cg_offset_dist[2] ],
@@ -258,7 +258,8 @@ def coffee_grinder_portafilter_transforms():
 
     transforms["pose_grinder_pf_pickup_transition"] = np.array([-71.520000, -67.360000, -104.480000, -99.970000, 8.080000, -10.480000])
     transforms["pose_grinder_pf_entrance_transition"] = np.array([-2.087809, -76.812134, -154.002466, -118.968245, -47.681912, 133.081316])
-    transforms["pose_grinder_pf_drop_off_transition"] = np.array([-16.170000, -100.110000, -148.810000, -101.540000, -60.630000, 135.160000])
+    transforms["pose_grinder_pf_drop_off1_transition"] = np.array([-16.170000, -100.110000, -148.810000, -101.540000, -60.630000, 135.160000])
+    transforms["pose_grinder_pf_drop_off2_transition"] = np.array([7.750000, -100.110000, -148.800000, -101.540000, -60.630000, 135.160000])
 
     transforms["T_grinder_place_pf_entrance"] = T_grinder @ T_grinder_pf_entrance_l @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
     transforms["T_grinder_place_pf_tilt1"] = T_grinder @ T_grinder_place_pf_head_l @ T_grinder_pf_tilt1_l @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
@@ -276,21 +277,22 @@ def coffee_grinder_place_portafilter_routine():
     robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_pickup_transition"]))
     robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_entrance_transition"]))
     robot.MoveJ(rdk.Mat(transforms["T_grinder_place_pf_entrance"].tolist()))
-    time.sleep(1)
     robot.MoveL(rdk.Mat(transforms["T_grinder_place_pf_tilt1"].tolist()))
     time.sleep(1)
     robot.MoveC(rdk.Mat(transforms["T_grinder_place_pf_tilt2_wo"].tolist()), rdk.Mat(transforms["T_grinder_place_tool_final"].tolist()))
     time.sleep(1)
     RDK.RunProgram("Portafilter Tool Detach (Grinder)", True)
-    robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off_transition"]))
+    robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off1_transition"]))
+    robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off2_transition"]))
     time.sleep(1)
-    #robot.MoveJ(T_home, blocking=True)
+    robot.MoveJ(T_home, blocking=True)
 
 def coffee_grinder_pickup_portafilter_routine():
     transforms = coffee_grinder_portafilter_transforms()
 
     robot.MoveJ(T_home, blocking=True)
-    robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off_transition"]))
+    robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off2_transition"]))
+    robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off1_transition"]))
     time.sleep(1)
     RDK.RunProgram("Portafilter Tool Attach (Grinder)", True)
     time.sleep(1)
@@ -505,7 +507,7 @@ T_pully_bit = np.array([[1.0,   0.0,   0.0,   -45.0 ],
 
 # ------------- Porta Filter Tool --------------- #
 #region Portafilter Tool
-pf_theta = -7.5 * np.pi/180
+pf_theta = -7.35 * np.pi/180
 T_pf_head     = np.array([[     np.cos(pf_theta),     0.0,  np.sin(pf_theta),     4.71 ],
                           [                  0.0,     1.0,               0.0,      0.0 ],
                           [-1 * np.sin(pf_theta),     0.0,  np.cos(pf_theta),   144.76 ], #Testing
@@ -529,7 +531,7 @@ def main():
     #coffee_grinder_latch_routine()
     coffee_grinder_place_portafilter_routine()
     # coffee_grinder_pickup_portafilter_routine()
-    robot.MoveJ(target, blocking=True)
+    # robot.MoveJ(target, blocking=True)
 
     pass
 
