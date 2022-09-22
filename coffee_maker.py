@@ -153,7 +153,7 @@ T_grinder_latch_so = np.array([[ 0.0,   0.0,  -1.0,   cg_latch_so_l[0] + cg_latc
                                [ 0.0,   0.0,   0.0,                               1.000000] ])
 
 # Grinder latch
-cg_latch_l = np.array([-35.82, 83.8, -153.68])
+cg_latch_l = np.array([-35.82, 80.8, -153.68])
 cg_latch_adj = np.array([0, 0, 0]) 
 T_grinder_latch = np.array([[ 0.0,   0.0,  -1.0,   cg_latch_l[0] + cg_latch_adj[0] ],
                             [ 1.0,   0.0,   0.0,   cg_latch_l[1] + cg_latch_adj[1] ],
@@ -168,7 +168,7 @@ T_grinder_latch_1 =  np.array([[ 0.0,   0.0,  -1.0,   cg_latch1_l[0] + cg_latch1
                                [ 0.0,   0.0,   0.0,                           1.000000] ])
 
 # Grinder latch 2
-cg_latch2_l = np.array([35.82, 80.8, -153.68])
+cg_latch2_l = np.array([65.82, 70.8, -153.68])
 cg_latch2_adj = np.array([0, 0, 0])
 T_grinder_latch_2 = np.array([[ 0.0,   0.0,  -1.0,   cg_latch2_l[0] + cg_latch2_adj[0] ],
                               [ 1.0,   0.0,   0.0,   cg_latch2_l[1] + cg_latch2_adj[1] ],
@@ -179,7 +179,7 @@ T_grinder_latch_2 = np.array([[ 0.0,   0.0,  -1.0,   cg_latch2_l[0] + cg_latch2_
 #region Portafilter Tranforms
 # Grinder base of portafilter tool
 cg_pf_base_l = np.array([157.61, 0.0, -250.45])
-cg_pf_base_adj = np.array([0, 0, 0]) 
+cg_pf_base_adj = np.array([5, -0.25, 0]) 
 T_grinder_place_pf_base_l = np.array([[ 0.0,  0.0, -1.0,   cg_pf_base_l[0] + cg_pf_base_adj[0] ],
                                       [ 0.0,  1.0,  0.0,   cg_pf_base_l[1] + cg_pf_base_adj[1] ],
                                       [ 1.0,  0.0,  0.0,   cg_pf_base_l[2] + cg_pf_base_adj[2] ],
@@ -187,18 +187,18 @@ T_grinder_place_pf_base_l = np.array([[ 0.0,  0.0, -1.0,   cg_pf_base_l[0] + cg_
                                       
 # Grinder head of portafilter tool
 cg_pf_head_l = np.array([40.41, 0, -200])
-cg_pf_head_adj = np.array([0, 0, 0])
+cg_pf_head_adj = np.array([10, 0, 5])
 T_grinder_place_pf_head_l = np.array([[ 0.0,     0.0,    -1.0,   cg_pf_head_l[0] + cg_pf_head_adj[0] ],
-                                      [ 0.0,     1.0,     0.0,   cg_pf_head_l[1] + cg_pf_head_adj[0] ],
-                                      [ 1.0,     0.0,     0.0,   cg_pf_head_l[2] + cg_pf_head_adj[0] ],
+                                      [ 0.0,     1.0,     0.0,   cg_pf_head_l[1] + cg_pf_head_adj[1] ],
+                                      [ 1.0,     0.0,     0.0,   cg_pf_head_l[2] + cg_pf_head_adj[2] ],
                                       [ 0.0,     0.0,     0.0,                              1.000000 ]])
 
 # Grinder portafilter entrance position
 cg_pf_entrance_l = np.array([180, 0, -170])
-cg_pf_entrance_adj = np.array([0, 0, 0])
+cg_pf_entrance_adj = np.array([0, 0, -5])
 T_grinder_pf_entrance_l = np.array([[ 0.0,     0.0,    -1.0,  cg_pf_entrance_l[0] + cg_pf_entrance_adj[0] ],
-                                    [ 0.0,     1.0,     0.0,  cg_pf_entrance_l[1] + cg_pf_entrance_adj[0] ],
-                                    [ 1.0,     0.0,     0.0,  cg_pf_entrance_l[2] + cg_pf_entrance_adj[0] ],
+                                    [ 0.0,     1.0,     0.0,  cg_pf_entrance_l[1] + cg_pf_entrance_adj[1] ],
+                                    [ 1.0,     0.0,     0.0,  cg_pf_entrance_l[2] + cg_pf_entrance_adj[2] ],
                                     [ 0.0,     0.0,     0.0,                                          1.0 ]])
 
 # Grinder portafilter tilt point 1
@@ -284,7 +284,7 @@ def coffee_grinder_place_portafilter_routine():
     RDK.RunProgram("Portafilter Tool Detach (Grinder)", True)
     robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off_transition"]))
     time.sleep(1)
-    robot.MoveJ(T_home, blocking=True)
+    #robot.MoveJ(T_home, blocking=True)
 
 def coffee_grinder_pickup_portafilter_routine():
     transforms = coffee_grinder_portafilter_transforms()
@@ -352,21 +352,21 @@ T_coffee_machine = np.array([[ cm_cTheta, -1 * cm_sTheta,     0.000000,   cm_ref
 
 #region Button Transforms
 cm_but_off_l = np.array([51, 35.25, -30.9])
-cm_but_off_adj = np.array([0, 0, 0])                                 
+cm_but_off_adj = np.array([-3, 0, 15])                                 
 T__coffee_machine_button_off = np.array([[ 0.0,  np.cos(cm_theta),    -np.sin(cm_theta),  cm_but_off_l[0] + cm_but_off_adj[0] ],
                                          [ 0.0,  np.sin(cm_theta),     np.cos(cm_theta),  cm_but_off_l[1] + cm_but_off_adj[1] ],
                                          [ 1.0,               0.0,                  0.0,  cm_but_off_l[2] + cm_but_off_adj[2] ],
                                          [ 0.0,               0.0,                  0.0,                                  1.0 ]])
 
 cm_but_on_l = np.array([51, 35.25, -44.0])
-cm_but_on_adj = np.array([0, 0, 0])  
+cm_but_on_adj = np.array([-3, 0, 15])  
 T__coffee_machine_button_on = np.array([[ 0.0,     np.cos(cm_theta),    -np.sin(cm_theta),  cm_but_on_l[0] + cm_but_on_adj[0] ],
                                         [ 0.0,     np.sin(cm_theta),     np.cos(cm_theta),  cm_but_on_l[1] + cm_but_on_adj[1] ],
                                         [ 1.0,                  0.0,                  0.0,  cm_but_on_l[2] + cm_but_on_adj[2] ],
                                         [ 0.0,                  0.0,                  0.0,                                1.0 ]])
 
 cm_but_so_l = np.array([60.0, 35.25, -38.0])
-cm_but_so_adj = np.array([0, 0, 0])
+cm_but_so_adj = np.array([-3, 0, 15])
 T_machine_button_so = np.array([[ 0.0,     np.cos(cm_theta),    -np.sin(cm_theta),   cm_but_so_l[0] + cm_but_so_adj[0] ],
                                 [ 0.0,     np.sin(cm_theta),     np.cos(cm_theta),   cm_but_so_l[1] + cm_but_so_adj[1] ],
                                 [ 1.0,                  0.0,                  0.0,   cm_but_so_l[2] + cm_but_so_adj[2] ],
@@ -462,7 +462,7 @@ T_twist_lock_pos = np.array([[ 0.0,   0.0,    -1.0,   tl_pos_l[0] + tl_pos_adj[0
                              [ 0.0,   0.0,     0.0,                     1.000000] ])
 
 tl_rot_l = np.array([14.9, 64.9, 201.0])
-tl_rot_adj = np.array([0, 0, 0])
+tl_rot_adj = np.array([0, 0, -10])
 T_twist_lock_rotate = np.array([[ 0.0,   0.0,    -1.0,   tl_rot_l[0] + tl_rot_adj[0] ],
                                 [ 0.0,   1.0,     0.0,   tl_rot_l[1] + tl_rot_adj[1] ],
                                 [ 1.0,   0.0,     0.0,   tl_rot_l[2] + tl_rot_adj[2] ],
@@ -508,7 +508,7 @@ T_pully_bit = np.array([[1.0,   0.0,   0.0,   -45.0 ],
 pf_theta = -7.5 * np.pi/180
 T_pf_head     = np.array([[     np.cos(pf_theta),     0.0,  np.sin(pf_theta),     4.71 ],
                           [                  0.0,     1.0,               0.0,      0.0 ],
-                          [-1 * np.sin(pf_theta),     0.0,  np.cos(pf_theta),   144.76 ],
+                          [-1 * np.sin(pf_theta),     0.0,  np.cos(pf_theta),   144.76 ], #Testing
                           [                  0.0,     0.0,               0.0,      1.0 ]])
 
 T_pf_base     = np.array([[     np.cos(pf_theta),     0.0,  np.sin(pf_theta),    -32.0 ],
@@ -522,12 +522,14 @@ T_pf_base     = np.array([[     np.cos(pf_theta),     0.0,  np.sin(pf_theta),   
 """ ---------------------------------------------- """
 def main():
     
-    # coffee_grinder_routine()
-    # coffee_machine_button_routine()
-    # coffee_machine_portafilter_routine()
-    # coffee_grinder_latch_routine()
-    # coffee_grinder_place_portafilter_routine()
+    robot.MoveJ(target, blocking=True)
+    #coffee_grinder_routine()
+    #coffee_machine_button_routine()
+    #coffee_machine_portafilter_routine()
+    #coffee_grinder_latch_routine()
+    coffee_grinder_place_portafilter_routine()
     # coffee_grinder_pickup_portafilter_routine()
+    robot.MoveJ(target, blocking=True)
 
     pass
 
