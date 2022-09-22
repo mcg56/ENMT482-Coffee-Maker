@@ -83,20 +83,87 @@ ts_zDir_g = normalise(np.cross(ts_xDir_g, ts_yDir_g))
 
 T_tamp_stand = np.append(np.c_[ts_xDir_g, ts_yDir_g, ts_zDir_g, ts_ref_g.transpose()], np.array([[0, 0, 0, 1]])).reshape(4, 4)
 
-T_tamper = np.array([[0.0,     1.0,    0.0,   -80.0],
-                     [0.0,     0.0,    1.0,     0.0],
-                     [1.0,     0.0,    0.0,   -55.0],
-                     [0.0,     0.0,    0.0,     1.0]])
+#region Transforms
+ts_scraper_l = np.array([70.0, 0, -32.0])
+ts_scraper_adj = np.array([0, 0, 0])
+T_tamp_stand_scraper_l = np.array([[ 0.0,  1.0,  0.0,  ts_scraper_l[0] + ts_scraper_adj[0]],
+                                   [ 0.0,  0.0,  1.0,  ts_scraper_l[1] + ts_scraper_adj[1]],
+                                   [ 1.0,  0.0,  0.0,  ts_scraper_l[2] + ts_scraper_adj[2]],
+                                   [ 0.0,  0.0,  0.0,                             1.000000]])
+
+ts_scraper_fwd_l = np.array([70.0, 50, -32.0])
+ts_scraper_fwd_adj = np.array([0, 0, 0])
+T_tamp_stand_scraper_fwd_l = np.array([[ 0.0,  1.0,  0.0,  ts_scraper_fwd_l[0] + ts_scraper_fwd_adj[0] ],
+                                       [ 0.0,  0.0,  1.0,  ts_scraper_fwd_l[1] + ts_scraper_fwd_adj[1] ],
+                                       [ 1.0,  0.0,  0.0,  ts_scraper_fwd_l[2] + ts_scraper_fwd_adj[2] ],
+                                       [ 0.0,  0.0,  0.0,                                     1.000000 ]])
+
+ts_scraper_back_l = np.array([70.0, -50, -32.0])
+ts_scraper_back_adj = np.array([0, 0, 0])
+T_tamp_stand_scraper_back_l = np.array([[ 0.0,  1.0,  0.0,  ts_scraper_back_l[0] + ts_scraper_back_adj[0] ],
+                                        [ 0.0,  0.0,  1.0,  ts_scraper_back_l[1] + ts_scraper_back_adj[1] ],
+                                        [ 1.0,  0.0,  0.0,  ts_scraper_back_l[2] + ts_scraper_back_adj[2] ],
+                                        [ 0.0,  0.0,  0.0,                                       1.000000 ]])
+
+ts_tamper_l = np.array([-80.0, 0, -55.0])
+ts_tamper_adj = np.array([0, 0, 5])
+T_tamper_l = np.array([[ 0.0,  1.0,  0.0,  ts_tamper_l[0] + ts_tamper_adj[0] ],
+                       [ 0.0,  0.0,  1.0,  ts_tamper_l[1] + ts_tamper_adj[1] ],
+                       [ 1.0,  0.0,  0.0,  ts_tamper_l[2] + ts_tamper_adj[2] ],
+                       [ 0.0,  0.0,  0.0,                           1.000000 ]])
+
+ts_tamper_so_l = np.array([-80.0, 0, -75.0])
+ts_tamper_so_adj = np.array([0, 0, 0])
+T_tamper_so_l = np.array([[ 0.0,  1.0,  0.0,  ts_tamper_so_l[0] + ts_tamper_so_adj[0] ],
+                          [ 0.0,  0.0,  1.0,  ts_tamper_so_l[1] + ts_tamper_so_adj[1] ],
+                          [ 1.0,  0.0,  0.0,  ts_tamper_so_l[2] + ts_tamper_so_adj[2] ],
+                          [ 0.0,  0.0,  0.0,                                 1.000000 ]])
+#endregion
+
+#region Routines
+def tamp_stand_scrape_and_tamp_routine():
+    pose_tamp_stand_so = np.array([3.430000, -64.740000, -151.320000, -140.470000, -101.110000, 140.000000])
+    pose_tamp_stand_scraper_fwd = np.array([3.430316, -98.748343, -116.322943, -140.475335, -101.111765, 127.533647])
+
+    T_tamp_stand_scraper_fwd = T_tamp_stand @ T_tamp_stand_scraper_fwd_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
+    T_tamp_stand_scraper_back = T_tamp_stand @ T_tamp_stand_scraper_back_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
+    T_tamp_stand_tamp_so = T_tamp_stand @ T_tamper_so_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
+    T_tamp_stand_tamp = T_tamp_stand @ T_tamper_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
+
+    robot.MoveJ(T_home, blocking=True)
+    RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
+    time.sleep(1)
+    robot.MoveJ(rdk.Mat(pose_tamp_stand_so))
+    time.sleep(1)
+    robot.MoveJ(rdk.Mat(T_tamp_stand_scraper_fwd.tolist()))
+    time.sleep(1)
+    robot.MoveL(rdk.Mat(T_tamp_stand_scraper_back.tolist()))
+    time.sleep(1)
+    robot.MoveJ(rdk.Mat(pose_tamp_stand_so))
+    time.sleep(1)
+    robot.MoveL(rdk.Mat(T_tamp_stand_tamp_so.tolist()))
+    time.sleep(1)
+    robot.MoveL(rdk.Mat(T_tamp_stand_tamp.tolist()))
+    time.sleep(1)
+    robot.MoveL(rdk.Mat(T_tamp_stand_tamp_so.tolist()))
+    time.sleep(1)
+    robot.MoveL(rdk.Mat(pose_tamp_stand_so))
+    time.sleep(1)
+    RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
+    robot.MoveJ(T_home, blocking=True)
+
+#endregion
+
 #endregion
 
 # ------------- Cup Stand --------------- #
 #region Cup Stand
 cs_ref_g = np.array([-1.5, -600.8, -20])
 
-T_cup_stand = np.array([[-1.000000,     0.000000,     0.000000,    cs_ref_g[0]],
-                        [ 0.000000,    -1.000000,     0.000000,    cs_ref_g[1]],
-                        [ 0.000000,     0.000000,     1.000000,    cs_ref_g[2]],
-                        [ 0.000000,     0.000000,     0.000000,       1.000000]])
+T_cup_stand = np.array([[-1.0,     0.0,     0.0,    cs_ref_g[0]],
+                        [ 0.0,    -1.0,     0.0,    cs_ref_g[1]],
+                        [ 0.0,     0.0,     1.0,    cs_ref_g[2]],
+                        [ 0.0,     0.0,     0.0,       1.000000]])
 #endregion
 
 # ----------- Coffee Grinder ------------- #
@@ -284,8 +351,8 @@ def coffee_grinder_place_portafilter_routine():
     RDK.RunProgram("Portafilter Tool Detach (Grinder)", True)
     robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off1_transition"]))
     robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off2_transition"]))
-    time.sleep(1)
-    robot.MoveJ(T_home, blocking=True)
+    # time.sleep(1)
+    # robot.MoveJ(T_home, blocking=True)
 
 def coffee_grinder_pickup_portafilter_routine():
     transforms = coffee_grinder_portafilter_transforms()
@@ -510,13 +577,18 @@ T_pully_bit = np.array([[1.0,   0.0,   0.0,   -45.0 ],
 pf_theta = -7.35 * np.pi/180
 T_pf_head     = np.array([[     np.cos(pf_theta),     0.0,  np.sin(pf_theta),     4.71 ],
                           [                  0.0,     1.0,               0.0,      0.0 ],
-                          [-1 * np.sin(pf_theta),     0.0,  np.cos(pf_theta),   144.76 ], #Testing
+                          [-1 * np.sin(pf_theta),     0.0,  np.cos(pf_theta),   144.76 ], 
                           [                  0.0,     0.0,               0.0,      1.0 ]])
 
 T_pf_base     = np.array([[     np.cos(pf_theta),     0.0,  np.sin(pf_theta),    -32.0 ],
                           [                  0.0,     1.0,               0.0,      0.0 ],
                           [-1 * np.sin(pf_theta),     0.0,  np.cos(pf_theta),    27.56 ],
                           [                  0.0,     0.0,               0.0,      1.0 ]])
+
+T_pf_top_edge =  T_pf_head @ np.array([[ 1.0,  0.0,  0.0,  22.0 ],
+                                       [ 0.0,  1.0,  0.0,   0.0 ],
+                                       [ 0.0,  0.0,  1.0,   0.0 ], 
+                                       [ 0.0,  0.0,  0.0,   1.0 ]])
 #endregion
 
 """ ---------------------------------------------- """
@@ -529,8 +601,9 @@ def main():
     #coffee_machine_button_routine()
     #coffee_machine_portafilter_routine()
     #coffee_grinder_latch_routine()
-    coffee_grinder_place_portafilter_routine()
+    # coffee_grinder_place_portafilter_routine()
     # coffee_grinder_pickup_portafilter_routine()
+    tamp_stand_scrape_and_tamp_routine()
     # robot.MoveJ(target, blocking=True)
 
     pass
