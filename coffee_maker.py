@@ -121,25 +121,32 @@ T_tamper_so_l = np.array([[ 0.0,  1.0,  0.0,  ts_tamper_so_l[0] + ts_tamper_so_a
 #endregion
 
 #region Routines
+def tamp_stand_poses():
+    transforms = {}
+
+    transforms["pose_tamp_stand_so"] = np.array([3.430000, -64.740000, -151.320000, -140.470000, -101.110000, 140.000000])
+    transforms["pose_tamp_stand_scraper_fwd"] = np.array([3.430316, -98.748343, -116.322943, -140.475335, -101.111765, 127.533647])
+
+    return transforms
+
 def tamp_stand_scrape_and_tamp_routine():
-    pose_tamp_stand_so = np.array([3.430000, -64.740000, -151.320000, -140.470000, -101.110000, 140.000000])
-    pose_tamp_stand_scraper_fwd = np.array([3.430316, -98.748343, -116.322943, -140.475335, -101.111765, 127.533647])
+    poses = tamp_stand_poses()
 
     T_tamp_stand_scraper_fwd = T_tamp_stand @ T_tamp_stand_scraper_fwd_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
     T_tamp_stand_scraper_back = T_tamp_stand @ T_tamp_stand_scraper_back_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
     T_tamp_stand_tamp_so = T_tamp_stand @ T_tamper_so_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
     T_tamp_stand_tamp = T_tamp_stand @ T_tamper_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
 
-    robot.MoveJ(T_home, blocking=True)
-    RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
-    time.sleep(1)
-    robot.MoveJ(rdk.Mat(pose_tamp_stand_so))
+    # robot.MoveJ(T_home, blocking=True)
+    # RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
+    # time.sleep(1)
+    robot.MoveL(rdk.Mat(poses["pose_tamp_stand_so"]))
     time.sleep(1)
     robot.MoveJ(rdk.Mat(T_tamp_stand_scraper_fwd.tolist()))
     time.sleep(1)
     robot.MoveL(rdk.Mat(T_tamp_stand_scraper_back.tolist()))
     time.sleep(1)
-    robot.MoveJ(rdk.Mat(pose_tamp_stand_so))
+    robot.MoveL(rdk.Mat(poses["pose_tamp_stand_so"]))
     time.sleep(1)
     robot.MoveL(rdk.Mat(T_tamp_stand_tamp_so.tolist()))
     time.sleep(1)
@@ -147,10 +154,10 @@ def tamp_stand_scrape_and_tamp_routine():
     time.sleep(1)
     robot.MoveL(rdk.Mat(T_tamp_stand_tamp_so.tolist()))
     time.sleep(1)
-    robot.MoveL(rdk.Mat(pose_tamp_stand_so))
+    robot.MoveL(rdk.Mat(poses["pose_tamp_stand_so"]))
     time.sleep(1)
-    RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
-    robot.MoveJ(T_home, blocking=True)
+    # RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
+    # robot.MoveJ(T_home, blocking=True)
 
 #endregion
 
@@ -345,7 +352,7 @@ T_grinder_pf_tilt2_wo_l = T_grinder_pf_int_wo_l @ T_grinder_pf_tilt2_l
 #endregion
 
 #region Routines
-def coffee_grinder_routine():
+def coffee_grinder_button_routine():
 
     grinder_but_so_angles = np.array([-60.590000, -154.320000, -38.940000, -166.720000, 167.520000, 50.000000])
     grinder_but_intermediate_angles = np.array([-61.780000, -105.740000, -53.830000, -134.870000, 120.500000, -78.640000])
@@ -378,8 +385,8 @@ def coffee_grinder_portafilter_transforms():
 
     transforms["pose_grinder_pf_pickup_transition"] = np.array([-71.520000, -67.360000, -104.480000, -99.970000, 8.080000, -10.480000])
     transforms["pose_grinder_pf_entrance_transition"] = np.array([-2.087809, -76.812134, -154.002466, -118.968245, -47.681912, 133.081316])
-    transforms["pose_grinder_pf_drop_off1_transition"] = np.array([-16.170000, -100.110000, -148.810000, -101.540000, -60.630000, 135.160000])
-    transforms["pose_grinder_pf_drop_off2_transition"] = np.array([7.750000, -100.110000, -148.800000, -101.540000, -60.630000, 135.160000])
+    transforms["pose_grinder_pf_drop_off1_transition"] = np.array([-16.170000, -100.110000, -148.810000, -101.540000, -60.630000, -224.38000])
+    transforms["pose_grinder_pf_drop_off2_transition"] = np.array([7.750000, -100.110000, -148.800000, -101.540000, -60.630000, -224.380000])
 
     transforms["T_grinder_place_pf_entrance"] = T_grinder @ T_grinder_pf_entrance_l @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
     transforms["T_grinder_place_pf_tilt1"] = T_grinder @ T_grinder_place_pf_head_l @ T_grinder_pf_tilt1_l @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
@@ -391,7 +398,7 @@ def coffee_grinder_portafilter_transforms():
 def coffee_grinder_place_portafilter_routine():
     transforms = coffee_grinder_portafilter_transforms()
 
-    robot.MoveJ(T_home, blocking=True)
+    robot.MoveJ(target, blocking=True)
     RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
     time.sleep(1)
     robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_pickup_transition"]))
@@ -402,15 +409,15 @@ def coffee_grinder_place_portafilter_routine():
     robot.MoveC(rdk.Mat(transforms["T_grinder_place_pf_tilt2_wo"].tolist()), rdk.Mat(transforms["T_grinder_place_tool_final"].tolist()))
     time.sleep(1)
     RDK.RunProgram("Portafilter Tool Detach (Grinder)", True)
-    robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off1_transition"]))
-    robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off2_transition"]))
+    robot.MoveL(rdk.Mat(transforms["pose_grinder_pf_drop_off1_transition"]))
+    robot.MoveL(rdk.Mat(transforms["pose_grinder_pf_drop_off2_transition"]))
     # time.sleep(1)
     # robot.MoveJ(T_home, blocking=True)
 
 def coffee_grinder_pickup_portafilter_routine():
     transforms = coffee_grinder_portafilter_transforms()
 
-    robot.MoveJ(T_home, blocking=True)
+    robot.MoveJ(target, blocking=True)
     robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off2_transition"]))
     robot.MoveJ(rdk.Mat(transforms["pose_grinder_pf_drop_off1_transition"]))
     time.sleep(1)
@@ -453,6 +460,16 @@ def coffee_grinder_latch_routine():
     robot.MoveJ(rdk.Mat(latch_align), blocking=True)
     robot.MoveJ(rdk.Mat(latch_intermediate_angles), blocking=True)
     RDK.RunProgram("Grinder Tool Detach (Tool Stand)", True)
+
+def coffee_grinder_to_tamp_stand_routine():
+    cg_poses = coffee_grinder_portafilter_transforms()
+    ts_poses = tamp_stand_poses()
+
+    robot.MoveJ(rdk.Mat(cg_poses["T_grinder_place_pf_entrance"].tolist()))
+    time.sleep(1)
+    robot.MoveL(rdk.Mat(ts_poses["pose_tamp_stand_so"]))
+    time.sleep(1)
+
 
 #endregion
 #endregion
@@ -582,8 +599,8 @@ T_tool_stand = np.array([[    np.cos(alpha_bt),     np.sin(alpha_bt),     0.0000
 #      [0.000000,     0.000000,     0.000000,     1.000000 ]])
 #endregion
 
-# ------------- Twist Lock Test --------------- #
-#region Twist Lock Test
+# ------------- Twist Lock --------------- #
+#region Twist Lock
 tl_pos_l = np.array([14.9, 64.9, 180.0])
 tl_pos_adj = np.array([0, 0, 0])
 T_twist_lock_pos = np.array([[ 0.0,   0.0,    -1.0,   tl_pos_l[0] + tl_pos_adj[0] ],
@@ -609,6 +626,19 @@ T_twist_lock_rotate1 = np.array([[ 0.0,    np.cos(twist_lock_alpha2),    np.sin(
                                  [ 0.0,   -np.sin(twist_lock_alpha2),    np.cos(twist_lock_alpha2),   tl_rot_l[1] + tl_rot_adj[1] ],
                                  [ 1.0,                          0.0,                          0.0,   tl_rot_l[2] + tl_rot_adj[2] ],
                                  [ 0.0,                          0.0,                          0.0,                      1.000000 ]])
+
+def tamp_stand_to_twist_lock():
+    transition_pose1 = np.array([-80.970000, -64.730000, -151.320000, -140.470000, -101.110000, -219.990000])
+    transition_pose2 = np.array([-163.180000, -64.730000, -151.320000, -140.470000, -101.110000, -219.990000])
+
+    ts_poses = tamp_stand_poses()
+
+    robot.MoveL(rdk.Mat(ts_poses["pose_tamp_stand_so"]))
+    time.sleep(1)
+    robot.MoveC(rdk.Mat(transition_pose1), rdk.Mat(transition_pose2))
+    time.sleep(1)
+
+
 #endregion
 
 # ------------- General Tool --------------- #
@@ -666,16 +696,22 @@ T_cup_tool = np.array([[1.0,   0.0,   0.0,     -47.0 ],
 def main():
     
     robot.MoveJ(target, blocking=True)
-    #coffee_grinder_routine()
-    #coffee_machine_button_routine()
-    #coffee_machine_portafilter_routine()
-    #coffee_grinder_latch_routine()
+    
     # coffee_grinder_place_portafilter_routine()
+    # coffee_grinder_button_routine()
+    # coffee_grinder_latch_routine()
+
     # coffee_grinder_pickup_portafilter_routine()
-    # tamp_stand_scrape_and_tamp_routine()
-    # robot.MoveJ(target, blocking=True)
-    cup_to_coffee_machine()
+    # coffee_grinder_to_tamp_stand_routine()
+    # tamp_stand_scrape_and_tamp_routine() # Need the above two to run
+    # tamp_stand_to_twist_lock() # Need the above three to run
+
+    # coffee_machine_portafilter_routine()
+    # cup_to_coffee_machine()
+    # coffee_machine_button_routine()
     # cup_to_stand()
+
+    # robot.MoveJ(target, blocking=True)
 
     pass
 
