@@ -180,49 +180,90 @@ T_cup_inv = np.array([[ 0.0,  -1.0,   0.0,  cs_cup_inv[0] + cs_cup_inv_adj[0]],
                       [-1.0,  0.0,   0.0,  cs_cup_inv[2] + cs_cup_inv_adj[2]],
                       [ 0.0,  0.0,   0.0,                           1.000000]])
 
-# T_cup_inv = np.array([[ 0.0,  -1.0,   0.0,  cs_cup_inv[0] + cs_cup_inv_adj[0]],
-                    #   [ 0.0,  0.0,   1.0,  cs_cup_inv[1] + cs_cup_inv_adj[1]],
-                    #   [-1.0,  0.0,   0.0,  cs_cup_inv[2] + cs_cup_inv_adj[2]],
-                    #   [ 0.0,  0.0,   0.0,                           1.000000]])
+cs_cup_inv_so = np.array([0.0, -80.0, 187.0])
+cs_cup_inv_so_adj = np.array([0, 0, 0]) 
+T_cup_inv_so = np.array([[ 0.0,  -1.0,   0.0,  cs_cup_inv_so[0] + cs_cup_inv_so_adj[0]],
+                      [ 0.0,  0.0,   1.0,  cs_cup_inv_so[1] + cs_cup_inv_so_adj[1]],
+                      [-1.0,  0.0,   0.0,  cs_cup_inv_so[2] + cs_cup_inv_so_adj[2]],
+                      [ 0.0,  0.0,   0.0,                           1.000000]])
 
+cs_cup_inv_upper_so = np.array([0.0, 0.0, 250])
+cs_cup_inv_upper_so_adj = np.array([0, 0, 0]) 
+T_cup_inv_upper_so = np.array([[ 0.0,  -1.0,   0.0,  cs_cup_inv_upper_so[0] + cs_cup_inv_upper_so_adj[0]],
+                      [ 0.0,  0.0,   1.0,  cs_cup_inv_upper_so[1] + cs_cup_inv_upper_so_adj[1]],
+                      [-1.0,  0.0,   0.0,  cs_cup_inv_upper_so[2] + cs_cup_inv_upper_so_adj[2]],
+                      [ 0.0,  0.0,   0.0,                           1.000000]])
+
+cs_cup_top = np.array([0.0, 0.0, 297.0])
+cs_cup_top_adj = np.array([0, 0, 0]) 
+T_cup_top = np.array([[ 0.0,  1.0,   0.0,  cs_cup_top[0] + cs_cup_top_adj[0]],
+                      [ 0.0,  0.0,   1.0,  cs_cup_top[1] + cs_cup_top_adj[1]],
+                      [ 1.0,  0.0,   0.0,  cs_cup_top[2] + cs_cup_top_adj[2]],
+                      [ 0.0,  0.0,   0.0,                           1.000000]])
+
+cs_cup_top_so = np.array([0.0, -80.0, 297.0])
+cs_cup_top_so_adj = np.array([0, 0, 0]) 
+T_cup_top_so = np.array([[ 0.0,  1.0,   0.0,  cs_cup_top_so[0] + cs_cup_top_so_adj[0]],
+                         [ 0.0,  0.0,   1.0,  cs_cup_top_so[1] + cs_cup_top_so_adj[1]],
+                         [ 1.0,  0.0,   0.0,  cs_cup_top_so[2] + cs_cup_top_so_adj[2]],
+                         [ 0.0,  0.0,   0.0,                                 1.000000]])
 
 def cup_to_coffee_machine():
-    # pose_tamp_stand_so = np.array([3.430000, -64.740000, -151.320000, -140.470000, -101.110000, 140.000000])
+    pose_cup_stand_so = np.array([-67.712795, -91.284232, -138.675905, -130.039863, -67.712795, -40.000000])
+    pose_cup_cm_so = np.array([-78.207197, -62.292760, -145.704363, -152.002877, -22.928142, -220.000000])
     # pose_tamp_stand_scraper_fwd = np.array([3.430316, -98.748343, -116.322943, -140.475335, -101.111765, 127.533647])
 
     T_cup_stand_inv = T_cup_stand @ T_cup_inv @ np.linalg.inv(T_cup_tool) @ np.linalg.inv(T_tool_rot)
+    T_cup_stand_inv_so = T_cup_stand @ T_cup_inv_so @ np.linalg.inv(T_cup_tool) @ np.linalg.inv(T_tool_rot)
+    T_cup_stand_inv_upper_so = T_cup_stand @ T_cup_inv_upper_so @ np.linalg.inv(T_cup_tool) @ np.linalg.inv(T_tool_rot)
     T_cup_coffee_machine = T_coffee_machine @ T_coffee_machine_platform @ np.linalg.inv(T_cup_tool) @ np.linalg.inv(T_tool_rot)
-    # T_tamp_stand_scraper_back = T_tamp_stand @ T_tamp_stand_scraper_back_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
-    # T_tamp_stand_tamp_so = T_tamp_stand @ T_tamper_so_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
-    # T_tamp_stand_tamp = T_tamp_stand @ T_tamper_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
+    T_cup_coffee_machine_so = T_coffee_machine @ T_coffee_machine_platform_so @ np.linalg.inv(T_cup_tool) @ np.linalg.inv(T_tool_rot)
 
-    robot.MoveJ(T_home, blocking=True)
-    RDK.RunProgram("Cup Tool Attach (Stand)", True)
-    RDK.RunProgram("Cup Tool Open", True)
-    robot.MoveJ(rdk.Mat(T_cup_stand_inv.tolist()))
-    RDK.RunProgram("Cup Tool Close", True)
-    robot.MoveJ(rdk.Mat(T_cup_coffee_machine.tolist()))
-
-
-
-    # RDK.RunProgram("Cup Tool Detach (Stand)", True)
     # robot.MoveJ(T_home, blocking=True)
+    # RDK.RunProgram("Cup Tool Attach (Stand)", True)
+    RDK.RunProgram("Cup Tool Open", True)
+    robot.MoveJ(rdk.Mat(T_cup_stand_inv_so.tolist()))
+    robot.MoveL(rdk.Mat(T_cup_stand_inv.tolist()))
+    RDK.RunProgram("Cup Tool Close", True)
+    robot.MoveL(rdk.Mat(T_cup_stand_inv_upper_so.tolist()))
+    robot.MoveJ(rdk.Mat(pose_cup_cm_so))
+    robot.MoveL(rdk.Mat(T_cup_coffee_machine_so.tolist()))
+    robot.MoveL(rdk.Mat(T_cup_coffee_machine.tolist()))
+    RDK.RunProgram("Cup Tool Open", True)
+    robot.MoveL(rdk.Mat(T_cup_coffee_machine_so.tolist()))
+    RDK.RunProgram("Cup Tool Close", True)
+
 
 def cup_to_stand():
-    # pose_tamp_stand_so = np.array([3.430000, -64.740000, -151.320000, -140.470000, -101.110000, 140.000000])
-    # pose_tamp_stand_scraper_fwd = np.array([3.430316, -98.748343, -116.322943, -140.475335, -101.111765, 127.533647])
 
-    # T_tamp_stand_scraper_fwd = T_tamp_stand @ T_tamp_stand_scraper_fwd_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
-    # T_tamp_stand_scraper_back = T_tamp_stand @ T_tamp_stand_scraper_back_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
-    # T_tamp_stand_tamp_so = T_tamp_stand @ T_tamper_so_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
-    # T_tamp_stand_tamp = T_tamp_stand @ T_tamper_l @ np.linalg.inv(T_pf_top_edge) @ np.linalg.inv(T_tool_rot)
+    pose_cup_cm_so = np.array([-78.207197, -62.292760, -145.704363, -152.002877, -22.928142, -220.000000])
+    pose_cup_top_so = np.array([-56.210285, -57.038609, -127.073562, -175.887829, -56.210285, -220.000000])
+    # pose_cup_top_inter = np.array([-138.221028, -65.626495, -144.180944, -150.192561, -122.941973, -220.000000])
 
-    robot.MoveJ(T_home, blocking=True)
+
+    T_cup_stand_top = T_cup_stand @ T_cup_top @ np.linalg.inv(T_cup_tool) @ np.linalg.inv(T_tool_rot)
+    T_cup_stand_top_so = T_cup_stand @ T_cup_top_so @ np.linalg.inv(T_cup_tool) @ np.linalg.inv(T_tool_rot)
+    T_cup_coffee_machine = T_coffee_machine @ T_coffee_machine_platform @ np.linalg.inv(T_cup_tool) @ np.linalg.inv(T_tool_rot)
+    T_cup_coffee_machine_so = T_coffee_machine @ T_coffee_machine_platform_so @ np.linalg.inv(T_cup_tool) @ np.linalg.inv(T_tool_rot)
+    
+    # robot.MoveJ(T_home, blocking=True)
     RDK.RunProgram("Cup Tool Attach (Stand)", True)
+    robot.MoveJ(rdk.Mat(pose_cup_cm_so))
+    robot.MoveL(rdk.Mat(T_cup_coffee_machine_so.tolist()))
     RDK.RunProgram("Cup Tool Open", True)
+    robot.MoveL(rdk.Mat(T_cup_coffee_machine.tolist()))
+    RDK.RunProgram("Cup Tool Close", True)
+    robot.MoveL(rdk.Mat(T_cup_coffee_machine_so.tolist()))
+    robot.MoveL(rdk.Mat(pose_cup_top_so))
+    robot.MoveL(rdk.Mat(T_cup_stand_top_so.tolist()))
+    robot.MoveL(rdk.Mat(T_cup_stand_top.tolist()))
+    RDK.RunProgram("Cup Tool Open", True)
+    robot.MoveL(rdk.Mat(T_cup_stand_top_so.tolist()))
+    robot.MoveL(rdk.Mat(pose_cup_top_so))
     RDK.RunProgram("Cup Tool Close", True)
     RDK.RunProgram("Cup Tool Detach (Stand)", True)
-    robot.MoveJ(T_home, blocking=True)
+    # robot.MoveJ(T_home, blocking=True)
+
 
 #endregion
 
@@ -511,12 +552,21 @@ T_machine_button_so = np.array([[ 0.0,     np.cos(cm_theta),    -np.sin(cm_theta
                                 [ 1.0,                  0.0,                  0.0,   cm_but_so_l[2] + cm_but_so_adj[2] ],
                                 [ 0.0,                  0.0,                  0.0,                                1.0] ])
 
+cmp_theta = 20/180 * np.pi
 cup_height = 80
-cm_platform = np.array([-12.68, 72, -290+cup_height])
-cm_platform_adj = np.array([0, 0, 0])
-T_coffee_machine_platform = np.array([[         0,           0.0,     -1.000000,   cm_platform[0] + cm_platform_adj[0]],
-                                      [       0.0,       1.000000,    0.000000,   cm_platform[1] + cm_platform_adj[1]],
+cm_platform = np.array([-10, 72, -290+cup_height]) #-12.68, 72, -290+cup_height
+cm_platform_adj = np.array([0, 0, 2])
+T_coffee_machine_platform = np.array([[         0,           np.cos(cmp_theta),     -np.sin(cmp_theta),   cm_platform[0] + cm_platform_adj[0]],
+                                      [       0.0,       np.sin(cmp_theta),    np.cos(cmp_theta),   cm_platform[1] + cm_platform_adj[1]],
                                       [ 1.0000000,       0.000000,    0.000000,   cm_platform[2] + cm_platform_adj[2]],
+                                      [ 0.0000000,       0.000000,    0.000000,                              1.000000]])
+
+cm_platform_so = np.array([-10, 72, -290+cup_height]) #-12.68, 72, -290+cup_height
+fiddle = 120
+cm_platform_adj_so = np.array([0, 0, 2])
+T_coffee_machine_platform_so = np.array([[         0,           np.cos(cmp_theta),     -np.sin(cmp_theta),   cm_platform[0]+ fiddle*np.sin(cmp_theta)],
+                                      [       0.0,       np.sin(cmp_theta),    np.cos(cmp_theta),   cm_platform[1]- fiddle*np.cos(cmp_theta)],
+                                      [ 1.0000000,       0.000000,    0.000000,   cm_platform_so[2]],
                                       [ 0.0000000,       0.000000,    0.000000,                              1.000000]])
 
 
@@ -695,8 +745,8 @@ T_cup_tool = np.array([[1.0,   0.0,   0.0,     -47.0 ],
 """ ---------------------------------------------- """
 def main():
     
-    robot.MoveJ(target, blocking=True)
-    
+    # robot.MoveJ(target, blocking=True)
+
     # coffee_grinder_place_portafilter_routine()
     # coffee_grinder_button_routine()
     # coffee_grinder_latch_routine()
@@ -707,7 +757,7 @@ def main():
     # tamp_stand_to_twist_lock() # Need the above three to run
 
     # coffee_machine_portafilter_routine()
-    # cup_to_coffee_machine()
+    cup_to_coffee_machine()
     # coffee_machine_button_routine()
     # cup_to_stand()
 
