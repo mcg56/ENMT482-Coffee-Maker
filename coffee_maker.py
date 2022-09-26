@@ -200,14 +200,14 @@ T_cup_inv_upper_so = np.array([[ 0.0,  -1.0,   0.0,  cs_cup_inv_upper_so[0] + cs
                       [ 0.0,  0.0,   0.0,                           1.000000]])
 
 cs_cup_top = np.array([0.0, 0.0, 297.0])
-cs_cup_top_adj = np.array([0, 0, 0]) 
+cs_cup_top_adj = np.array([-4, 0, 20]) 
 T_cup_top = np.array([[ 0.0,  1.0,   0.0,  cs_cup_top[0] + cs_cup_top_adj[0]],
                       [ 0.0,  0.0,   1.0,  cs_cup_top[1] + cs_cup_top_adj[1]],
                       [ 1.0,  0.0,   0.0,  cs_cup_top[2] + cs_cup_top_adj[2]],
                       [ 0.0,  0.0,   0.0,                           1.000000]])
 
-cs_cup_top_so = np.array([0.0, -80.0, 297.0])
-cs_cup_top_so_adj = np.array([0, 0, 0]) 
+cs_cup_top_so = np.array([0.0, -100.0, 297.0])
+cs_cup_top_so_adj = np.array([0, 0, 20]) 
 T_cup_top_so = np.array([[ 0.0,  1.0,   0.0,  cs_cup_top_so[0] + cs_cup_top_so_adj[0]],
                          [ 0.0,  0.0,   1.0,  cs_cup_top_so[1] + cs_cup_top_so_adj[1]],
                          [ 1.0,  0.0,   0.0,  cs_cup_top_so[2] + cs_cup_top_so_adj[2]],
@@ -249,7 +249,7 @@ def cup_to_coffee_machine():
 def cup_to_stand():
 
     pose_cup_cm_so = np.array([-78.207197, -62.292760, -145.704363, -152.002877, -22.928142, -220.000000])
-    pose_cup_top_so = np.array([-56.210285, -57.038609, -127.073562, -175.887829, -56.210285, -220.000000])
+    pose_cup_top_so = np.array([-54.084890, -66.164274, -149.284735, 35.449009, 54.084890, -40.000000])
     pose_cup_top_inter = np.array([-70.100000, -72.480000, -98.610000, -162.870000, -25.280000, -216.950000]) #-125.260000, -74.680000, -88.530000, -138.520000, 90.300000, -211.250000
     pose_cup_top_inter2 = np.array([-125.260000, -74.680000, -88.530000, -138.520000, 90.300000, -211.250000])
 
@@ -261,6 +261,8 @@ def cup_to_stand():
 
     RDK.RunProgram("Cup Tool Attach (Stand)", True)
     robot.MoveJ(rdk.Mat(pose_cup_top_inter2))
+    robot.MoveJ(rdk.Mat(pose_cup_top_inter))
+    robot.MoveL(rdk.Mat(pose_cup_top_so))
     robot.MoveJ(rdk.Mat(pose_cup_cm_so))
     robot.MoveL(rdk.Mat(T_cup_coffee_machine_so.tolist()))
     RDK.RunProgram("Cup Tool Open", True)
@@ -772,13 +774,13 @@ def main():
     # coffee_grinder_button_routine()
     # coffee_grinder_latch_routine()
 
-    coffee_grinder_pickup_portafilter_routine()
+    # coffee_grinder_pickup_portafilter_routine()
     # tamp_stand_scrape_and_tamp_routine()
 
     # coffee_machine_portafilter_routine()
     #cup_to_coffee_machine()
     # coffee_machine_button_routine()
-    # cup_to_stand()
+    cup_to_stand()
 
     # robot.MoveJ(target, blocking=True)
 
