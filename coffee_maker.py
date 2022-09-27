@@ -92,21 +92,21 @@ T_tamp_stand_scraper_l = np.array([[ 0.0,  1.0,  0.0,  ts_scraper_l[0] + ts_scra
                                    [ 0.0,  0.0,  0.0,                             1.000000]])
 
 ts_scraper_fwd_l = np.array([70.0, 50, -32.0])
-ts_scraper_fwd_adj = np.array([0, 0, 0])
+ts_scraper_fwd_adj = np.array([0, 0, 10])
 T_tamp_stand_scraper_fwd_l = np.array([[ 0.0,  1.0,  0.0,  ts_scraper_fwd_l[0] + ts_scraper_fwd_adj[0] ],
                                        [ 0.0,  0.0,  1.0,  ts_scraper_fwd_l[1] + ts_scraper_fwd_adj[1] ],
                                        [ 1.0,  0.0,  0.0,  ts_scraper_fwd_l[2] + ts_scraper_fwd_adj[2] ],
                                        [ 0.0,  0.0,  0.0,                                     1.000000 ]])
 
 ts_scraper_back_l = np.array([70.0, -50, -32.0])
-ts_scraper_back_adj = np.array([0, 0, 0])
+ts_scraper_back_adj = np.array([0, 0, 10])
 T_tamp_stand_scraper_back_l = np.array([[ 0.0,  1.0,  0.0,  ts_scraper_back_l[0] + ts_scraper_back_adj[0] ],
                                         [ 0.0,  0.0,  1.0,  ts_scraper_back_l[1] + ts_scraper_back_adj[1] ],
                                         [ 1.0,  0.0,  0.0,  ts_scraper_back_l[2] + ts_scraper_back_adj[2] ],
                                         [ 0.0,  0.0,  0.0,                                       1.000000 ]])
 
 ts_tamper_l = np.array([-80.0, 0, -55.0])
-ts_tamper_adj = np.array([0, 0, 5])
+ts_tamper_adj = np.array([0, 0, 15])
 T_tamper_l = np.array([[ 0.0,  1.0,  0.0,  ts_tamper_l[0] + ts_tamper_adj[0] ],
                        [ 0.0,  0.0,  1.0,  ts_tamper_l[1] + ts_tamper_adj[1] ],
                        [ 1.0,  0.0,  0.0,  ts_tamper_l[2] + ts_tamper_adj[2] ],
@@ -371,7 +371,7 @@ T_grinder_place_pf_base_l = np.array([[ 0.0,  0.0, -1.0,   cg_pf_base_l[0] + cg_
                                       
 # Grinder head of portafilter tool
 cg_pf_head_l = np.array([40.41, 0, -200])
-cg_pf_head_adj = np.array([8, 0, -8])
+cg_pf_head_adj = np.array([8, 0, 0])
 T_grinder_place_pf_head_l = np.array([[ 0.0,     0.0,    -1.0,   cg_pf_head_l[0] + cg_pf_head_adj[0] ],
                                       [ 0.0,     1.0,     0.0,   cg_pf_head_l[1] + cg_pf_head_adj[1] ],
                                       [ 1.0,     0.0,     0.0,   cg_pf_head_l[2] + cg_pf_head_adj[2] ],
@@ -774,13 +774,13 @@ def main():
     # coffee_grinder_button_routine()
     # coffee_grinder_latch_routine()
 
-    # coffee_grinder_pickup_portafilter_routine()
+    #coffee_grinder_pickup_portafilter_routine()
     # tamp_stand_scrape_and_tamp_routine()
 
     # coffee_machine_portafilter_routine()
     #cup_to_coffee_machine()
     # coffee_machine_button_routine()
-    cup_to_stand()
+    #cup_to_stand()
 
     # robot.MoveJ(target, blocking=True)
 
