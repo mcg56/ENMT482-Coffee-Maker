@@ -106,14 +106,14 @@ T_tamp_stand_scraper_back_l = np.array([[ 0.0,  1.0,  0.0,  ts_scraper_back_l[0]
                                         [ 0.0,  0.0,  0.0,                                       1.000000 ]])
 
 ts_tamper_l = np.array([-80.0, 0, -55.0])
-ts_tamper_adj = np.array([0, 0, 15])
+ts_tamper_adj = np.array([0, -2, 15])
 T_tamper_l = np.array([[ 0.0,  1.0,  0.0,  ts_tamper_l[0] + ts_tamper_adj[0] ],
                        [ 0.0,  0.0,  1.0,  ts_tamper_l[1] + ts_tamper_adj[1] ],
                        [ 1.0,  0.0,  0.0,  ts_tamper_l[2] + ts_tamper_adj[2] ],
                        [ 0.0,  0.0,  0.0,                           1.000000 ]])
 
 ts_tamper_so_l = np.array([-80.0, 0, -75.0])
-ts_tamper_so_adj = np.array([0, 0, 0])
+ts_tamper_so_adj = np.array([0, -2, 0])
 T_tamper_so_l = np.array([[ 0.0,  1.0,  0.0,  ts_tamper_so_l[0] + ts_tamper_so_adj[0] ],
                           [ 0.0,  0.0,  1.0,  ts_tamper_so_l[1] + ts_tamper_so_adj[1] ],
                           [ 1.0,  0.0,  0.0,  ts_tamper_so_l[2] + ts_tamper_so_adj[2] ],
@@ -186,7 +186,7 @@ T_cup_inv = np.array([[ 0.0,  -1.0,   0.0,  cs_cup_inv[0] + cs_cup_inv_adj[0]],
                       [ 0.0,  0.0,   0.0,                           1.000000]])
 
 cs_cup_inv_so = np.array([0.0, -80.0, 187.0])
-cs_cup_inv_so_adj = np.array([0, 0, 0]) 
+cs_cup_inv_so_adj = np.array([-4, 0, -8]) 
 T_cup_inv_so = np.array([[ 0.0,  -1.0,   0.0,  cs_cup_inv_so[0] + cs_cup_inv_so_adj[0]],
                       [ 0.0,  0.0,   1.0,  cs_cup_inv_so[1] + cs_cup_inv_so_adj[1]],
                       [-1.0,  0.0,   0.0,  cs_cup_inv_so[2] + cs_cup_inv_so_adj[2]],
@@ -200,7 +200,7 @@ T_cup_inv_upper_so = np.array([[ 0.0,  -1.0,   0.0,  cs_cup_inv_upper_so[0] + cs
                       [ 0.0,  0.0,   0.0,                           1.000000]])
 
 cs_cup_top = np.array([0.0, 0.0, 297.0])
-cs_cup_top_adj = np.array([-4, 0, 20]) 
+cs_cup_top_adj = np.array([0, 0, 20]) 
 T_cup_top = np.array([[ 0.0,  1.0,   0.0,  cs_cup_top[0] + cs_cup_top_adj[0]],
                       [ 0.0,  0.0,   1.0,  cs_cup_top[1] + cs_cup_top_adj[1]],
                       [ 1.0,  0.0,   0.0,  cs_cup_top[2] + cs_cup_top_adj[2]],
@@ -215,7 +215,8 @@ T_cup_top_so = np.array([[ 0.0,  1.0,   0.0,  cs_cup_top_so[0] + cs_cup_top_so_a
 
 def cup_to_coffee_machine():
     pose_cup_stand_so = np.array([-58.080954, -77.549329, -150.216101, -132.234570, -58.080954, -40.000000])
-    pose_cup_inter3 = np.array([-106.340000, -93.860000, -144.940000, -131.870000, 36.820000, -105.850000]) #-67.712795, -91.284232, -138.675905, -130.039863, -67.712795, -40.000000
+    pose_cup_inter3 = np.array([-79.920000, -60.970000, -100.990000, -181.780000, 55.840000, -54.290000]) #-67.712795, -91.284232, -138.675905, -130.039863, -67.712795, -40.000000
+    pose_cup_inter4 = np.array([-84.360000, -60.590000, -92.670000, -165.150000, 39.210000, -111.050000])
     pose_cup_cm_so = np.array([-78.207197, -62.292760, -145.704363, -152.002877, -22.928142, -220.000000])
     pose_cup_inter1 = np.array([-48.710000, -62.290000, -145.700000, -152.000000, -22.920000, -220.000000])
     pose_cup_inter2 = np.array([-79.600000, -70.100000, -120.580000, -127.130000, 45.150000, -220.000000])
@@ -229,6 +230,7 @@ def cup_to_coffee_machine():
     # robot.MoveJ(T_home, blocking=True)
     RDK.RunProgram("Cup Tool Attach (Stand)", True)
     robot.MoveJ(rdk.Mat(pose_cup_inter3), blocking=True)
+    robot.MoveJ(rdk.Mat(pose_cup_inter4), blocking=True)
     robot.MoveJ(rdk.Mat(pose_cup_stand_so), blocking=True)
     robot.MoveJ(rdk.Mat(T_cup_stand_inv_so.tolist()))
     RDK.RunProgram("Cup Tool Open", True)
@@ -586,7 +588,7 @@ T_coffee_machine_platform = np.array([[         0,           np.cos(cmp_theta), 
 
 cm_platform_so = np.array([-10, 72, -290+cup_height]) #-12.68, 72, -290+cup_height
 fiddle = 120
-cm_platform_adj_so = np.array([0, 0, 2])
+cm_platform_adj_so = np.array([0, 0, 7])
 T_coffee_machine_platform_so = np.array([[         0,           np.cos(cmp_theta),     -np.sin(cmp_theta),   cm_platform[0]+ fiddle*np.sin(cmp_theta)],
                                       [       0.0,       np.sin(cmp_theta),    np.cos(cmp_theta),   cm_platform[1]- fiddle*np.cos(cmp_theta)],
                                       [ 1.0000000,       0.000000,    0.000000,   cm_platform_so[2]],
@@ -621,34 +623,159 @@ def coffee_machine_button_routine():
     robot.MoveJ(rdk.Mat(coffee_machine_but_intermediate_angles), blocking=True)
     RDK.RunProgram("Grinder Tool Detach (Tool Stand)", True)
 
+
+# ------------- MoveC --------------- #
+# def coffee_machine_portafilter_routine():
+
+#     twist_lock_align = np.array([-181.514191, -85.515077, 227.735903, -133.465121, -120.965899, 144.530984])
+#     twist_lock_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
+
+#     T_head_pos = T_tool_stand @ T_twist_lock_pos @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+#     T_head_rot = T_tool_stand @ T_twist_lock_rotate @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+#     T_head_rot1 = T_tool_stand @ T_twist_lock_rotate1 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+#     T_head_rot2 = T_tool_stand @ T_twist_lock_rotate2 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+
+#     # Routine
+#     # robot.MoveJ(target, blocking=True)
+#     RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
+#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
+#     # robot.MoveJ(rdk.Mat(twist_lock_align), blocking=True)
+#     robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
+#     time.sleep(1)
+#     robot.MoveJ(rdk.Mat(T_head_rot.tolist()), blocking=True)
+#     time.sleep(1)
+#     robot.MoveC(rdk.Mat(T_head_rot1.tolist()),rdk.Mat(T_head_rot2.tolist()), blocking=True)
+#     time.sleep(1)
+#     robot.MoveC(rdk.Mat(T_head_rot1.tolist()),rdk.Mat(T_head_rot.tolist()), blocking=True)
+#     robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
+#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
+#     RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
+
+#endregion
+
+# # ------------- MoveL --------------- #
+# def coffee_machine_portafilter_routine():
+
+#     twist_lock_align = np.array([-181.514191, -85.515077, 227.735903, -133.465121, -120.965899, 144.530984])
+#     twist_lock_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
+
+#     T_head_pos = T_tool_stand @ T_twist_lock_pos @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+#     T_head_rot = T_tool_stand @ T_twist_lock_rotate @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+#     T_head_rot1 = T_tool_stand @ T_twist_lock_rotate1 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+#     T_head_rot2 = T_tool_stand @ T_twist_lock_rotate2 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+
+#     # Routine
+#     # robot.MoveJ(target, blocking=True)
+#     RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
+#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
+#     # robot.MoveJ(rdk.Mat(twist_lock_align), blocking=True)
+#     robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
+#     time.sleep(1)
+#     robot.MoveJ(rdk.Mat(T_head_rot.tolist()), blocking=True)
+#     time.sleep(1)
+#     for i in range(90,135+1,9):
+#         tl_rot_l = np.array([14.9, 64.9, 201.0])
+#         tl_rot_adj = np.array([0, 0, -10])
+#         twist_lock_alphai = -i/180 * np.pi
+#         T_twist_lock_rotatei = np.array([[ 0.0,    np.cos(twist_lock_alphai),    np.sin(twist_lock_alphai),   tl_rot_l[0] + tl_rot_adj[0] ],
+#                                     [ 0.0,   -np.sin(twist_lock_alphai),    np.cos(twist_lock_alphai),   tl_rot_l[1] + tl_rot_adj[1] ],
+#                                     [ 1.0,                          0.0,                          0.0,   tl_rot_l[2] + tl_rot_adj[2] ],
+#                                     [ 0.0,                          0.0,                          0.0,                      1.000000 ]])
+#         T_head_roti = T_tool_stand @ T_twist_lock_rotatei @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+#         robot.MoveL(rdk.Mat(T_head_roti.tolist()), blocking=True)
+
+#     for i in range(135,90-1,-9):
+#         tl_rot_l = np.array([14.9, 64.9, 201.0])
+#         tl_rot_adj = np.array([0, 0, -10])
+#         twist_lock_alphai = -i/180 * np.pi
+#         T_twist_lock_rotatei = np.array([[ 0.0,    np.cos(twist_lock_alphai),    np.sin(twist_lock_alphai),   tl_rot_l[0] + tl_rot_adj[0] ],
+#                                     [ 0.0,   -np.sin(twist_lock_alphai),    np.cos(twist_lock_alphai),   tl_rot_l[1] + tl_rot_adj[1] ],
+#                                     [ 1.0,                          0.0,                          0.0,   tl_rot_l[2] + tl_rot_adj[2] ],
+#                                     [ 0.0,                          0.0,                          0.0,                      1.000000 ]])
+#         T_head_roti = T_tool_stand @ T_twist_lock_rotatei @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+#         robot.MoveL(rdk.Mat(T_head_roti.tolist()), blocking=True)
+
+#     robot.MoveJ(rdk.Mat(T_head_rot.tolist()), blocking=True)
+#     robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
+
+#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
+#     RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
+
+#endregion
+
+# ------------- Change tool frame  --------------- #
 def coffee_machine_portafilter_routine():
 
-    twist_lock_align = np.array([-181.514191, -85.515077, 227.735903, -133.465121, -120.965899, 144.530984])
+    pf_angle = -7.5*np.pi/180 #radians
+    z_standoff_amount = -50
+    x_standoff_amount = 100
+    y_standoff_amount = 0
+
+
+    #Transform of group head test on in tool stand frame
+    portafilter_z_offset = 5
+    ts_T_ght_on = np.array([[0, 0, -1, 14.9],
+                            [0, 1, 0, 64.9],
+                            [1, 0, 0, 214.0 - portafilter_z_offset],
+                            [0, 0, 0, 1]])
+    
+    #Transform of group head test on 45 degree CCW rotation in tool stand frame
+    ts_T_ght_on_45deg = np.array([[0, -np.sqrt(0.5), -np.sqrt(0.5), 14.9],
+                                  [0,  np.sqrt(0.5), -np.sqrt(0.5), 64.9],
+                                  [1,             0,             0, 214.0 - portafilter_z_offset],
+                                  [0,             0,             0, 1]])
+
+    #Transform of group head test z standoff in tool stand frame
+    ts_T_ght_z_standoff = np.array([[0, 0, -1, 14.9],
+                                  [0, 1, 0, 64.9],
+                                  [1, 0, 0, 214.0 + z_standoff_amount - portafilter_z_offset],
+                                  [0, 0, 0, 1]])
+    
+    #Transform of group head test xz standoff in tool stand frame
+    ts_T_ght_xyz_standoff = np.array([[0, 0, -1, 14.9 + x_standoff_amount],
+                                  [0, 1, 0, 64.9 + y_standoff_amount],
+                                  [1, 0, 0, 214.0 + z_standoff_amount - portafilter_z_offset],
+                                  [0, 0, 0, 1]])
+
+    #Transform of point PF1 in the portafilter tool frame
+    pf_T_pf1 = np.array([[np.cos(pf_angle),  0, np.sin(pf_angle), 4.71],
+                         [0,              1,             0, 0],
+                         [-np.sin(pf_angle), 0, np.cos(pf_angle), 144.76],
+                         [0,              0,             0, 1]])
+
+    #Transform of portafilter tool in the tcp frame
+    rot = -50 #degrees
+    tcp_T_pf = np.array([[np.cos(np.pi/180 * rot), -np.sin(np.pi/180 * rot), 0, 0],
+                         [np.sin(np.pi/180 * rot), np.cos(np.pi/180 * rot),  0, 0],
+                         [0,                     0,                      1, 0],
+                         [0,                     0,                      0, 1]])
+
+    ur_T_grinder_for_grouphead_in_45deg = T_tool_stand @ ts_T_ght_on_45deg
+    ur_T_grinder_for_grouphead_in = T_tool_stand @ ts_T_ght_on
+    ur_T_tcp_for_z_standoff = T_tool_stand @ ts_T_ght_z_standoff @ np.linalg.inv(pf_T_pf1) @ np.linalg.inv(tcp_T_pf)
+    ur_T_grinder_for_z_standoff = T_tool_stand @ ts_T_ght_z_standoff
+
     twist_lock_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
 
-    T_head_pos = T_tool_stand @ T_twist_lock_pos @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-    T_head_rot = T_tool_stand @ T_twist_lock_rotate @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-    T_head_rot1 = T_tool_stand @ T_twist_lock_rotate1 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-    T_head_rot2 = T_tool_stand @ T_twist_lock_rotate2 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-
-    # Routine
-    # robot.MoveJ(target, blocking=True)
+    #Pickup portafilter tool    
     RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
-    # robot.MoveJ(rdk.Mat(twist_lock_align), blocking=True)
-    robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
+    robot.MoveJ(rdk.Mat(ur_T_tcp_for_z_standoff.tolist()), blocking=True)
     time.sleep(1)
-    robot.MoveJ(rdk.Mat(T_head_rot.tolist()), blocking=True)
-    time.sleep(1)
-    robot.MoveC(rdk.Mat(T_head_rot1.tolist()),rdk.Mat(T_head_rot2.tolist()), blocking=True)
-    time.sleep(1)
-    robot.MoveC(rdk.Mat(T_head_rot1.tolist()),rdk.Mat(T_head_rot.tolist()), blocking=True)
-    robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
+    portafilter = RDK.Item('Portafilter Tool')
+    robot.setPoseTool(portafilter)
+    robot.MoveJ(rdk.Mat(ur_T_grinder_for_z_standoff.tolist()), blocking=True)
+    robot.MoveL(rdk.Mat(ur_T_grinder_for_grouphead_in.tolist()), blocking=True)
+    robot.MoveL(rdk.Mat(ur_T_grinder_for_grouphead_in_45deg.tolist()), blocking=True)
+    robot.MoveL(rdk.Mat(ur_T_grinder_for_grouphead_in.tolist()), blocking=True)
+    master = RDK.Item('Master Tool')
+    robot.setPoseTool(master)
+    robot.MoveJ(rdk.Mat(ur_T_tcp_for_z_standoff.tolist()), blocking=True)
     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
     RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
-
-#endregion
-#endregion
+    #End home
+    #robot.MoveJ(home_target, blocking=True)
+# #endregion
 
 # ------------- Tool Stand --------------- #
 #region Tool Stand
@@ -777,8 +904,8 @@ def main():
     #coffee_grinder_pickup_portafilter_routine()
     # tamp_stand_scrape_and_tamp_routine()
 
-    # coffee_machine_portafilter_routine()
-    #cup_to_coffee_machine()
+    coffee_machine_portafilter_routine()
+    # cup_to_coffee_machine()
     # coffee_machine_button_routine()
     #cup_to_stand()
 
