@@ -564,14 +564,14 @@ T__coffee_machine_button_off = np.array([[ 0.0,  np.cos(cm_theta),    -np.sin(cm
                                          [ 0.0,               0.0,                  0.0,                                  1.0 ]])
 
 cm_but_on_l = np.array([51, 35.25, -44.0])
-cm_but_on_adj = np.array([-3, 0, 15])  
+cm_but_on_adj = np.array([-3, 0, 13])  
 T__coffee_machine_button_on = np.array([[ 0.0,     np.cos(cm_theta),    -np.sin(cm_theta),  cm_but_on_l[0] + cm_but_on_adj[0] ],
                                         [ 0.0,     np.sin(cm_theta),     np.cos(cm_theta),  cm_but_on_l[1] + cm_but_on_adj[1] ],
                                         [ 1.0,                  0.0,                  0.0,  cm_but_on_l[2] + cm_but_on_adj[2] ],
                                         [ 0.0,                  0.0,                  0.0,                                1.0 ]])
 
 cm_but_so_l = np.array([60.0, 35.25, -38.0])
-cm_but_so_adj = np.array([-3, 0, 15])
+cm_but_so_adj = np.array([5, 0, 15])
 T_machine_button_so = np.array([[ 0.0,     np.cos(cm_theta),    -np.sin(cm_theta),   cm_but_so_l[0] + cm_but_so_adj[0] ],
                                 [ 0.0,     np.sin(cm_theta),     np.cos(cm_theta),   cm_but_so_l[1] + cm_but_so_adj[1] ],
                                 [ 1.0,                  0.0,                  0.0,   cm_but_so_l[2] + cm_but_so_adj[2] ],
@@ -600,7 +600,7 @@ T_coffee_machine_platform_so = np.array([[         0,           np.cos(cmp_theta
 #region Routines
 def coffee_machine_button_routine():
 
-    coffee_machine_but_so_angles = np.array([-139.450534, -82.824468, -112.637521, -164.538011, -114.171479, 140.000000])
+    coffee_machine_but_so_angles = np.array([-140.247036, -82.198223, -110.912461, -166.889316, -114.967982, 140.000000])
     coffee_machine_but_intermediate_angles = np.array([-118.810000, -61.780000, -123.560000, -179.410000, -68.910000, 75.120000])  #-136.630000, -54.650000, -142.570000, -153.640000, -71.090000, 75.120000
     
     T_but_off = T_coffee_machine @ T__coffee_machine_button_off @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_tool_rot)
@@ -614,12 +614,13 @@ def coffee_machine_button_routine():
     robot.MoveJ(rdk.Mat(coffee_machine_but_intermediate_angles), blocking=True)
     robot.MoveJ(rdk.Mat(coffee_machine_but_so_angles), blocking=True)
     robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)
-    time.sleep(4)
+    # time.sleep(1)
     robot.MoveL(rdk.Mat(T_but_off.tolist()), blocking=True)
-    time.sleep(4)
     robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)
+    time.sleep(10)
     robot.MoveL(rdk.Mat(T_but_on.tolist()), blocking=True)
-    time.sleep(4)
+    robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)
+    # time.sleep(4)
     robot.MoveJ(rdk.Mat(coffee_machine_but_intermediate_angles), blocking=True)
     RDK.RunProgram("Grinder Tool Detach (Tool Stand)", True)
 
@@ -748,10 +749,9 @@ def coffee_machine_portafilter_routine():
     T_pf_tool_so_tool_frame = T_tool_stand @ T_pf_so
 
     #Pickup portafilter tool    
-    RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
+    # RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
     robot.MoveJ(rdk.Mat(T_pf_tool_so.tolist()), blocking=True)
-    time.sleep(1)
     portafilter_cup = RDK.Item('Portafilter Tool')
     robot.setPoseTool(portafilter_cup)
     robot.MoveJ(rdk.Mat(T_pf_tool_so_tool_frame.tolist()), blocking=True)
@@ -762,7 +762,8 @@ def coffee_machine_portafilter_routine():
     robot.setPoseTool(master)
     robot.MoveJ(rdk.Mat(T_pf_tool_so.tolist()), blocking=True)
     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
-    RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
+    time.sleep(10)
+    # RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
 # #endregion
 
 # ------------- Tool Stand --------------- #
@@ -894,11 +895,12 @@ def main():
     tamp_stand_to_twist_lock() # Done
 
     coffee_machine_portafilter_routine() # Done the start but not the end
-    # cup_to_coffee_machine()
-    # coffee_machine_button_routine()
-    #cup_to_stand()
+    # RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
+    cup_to_coffee_machine() 
+    coffee_machine_button_routine()
+    cup_to_stand()
 
-    # robot.MoveJ(target, blocking=True)
+    robot.MoveJ(target, blocking=True)
 
     pass
 
