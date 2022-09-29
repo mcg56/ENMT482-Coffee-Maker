@@ -654,53 +654,53 @@ def coffee_machine_button_routine():
 
 #endregion
 
-# # ------------- MoveL --------------- #
-# def coffee_machine_portafilter_routine():
+# ------------- MoveL --------------- #
+def coffee_machine_portafilter_routine():
 
-#     twist_lock_align = np.array([-181.514191, -85.515077, 227.735903, -133.465121, -120.965899, 144.530984])
-#     twist_lock_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
+    twist_lock_align = np.array([-181.514191, -85.515077, 227.735903, -133.465121, -120.965899, 144.530984])
+    twist_lock_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
 
-#     T_head_pos = T_tool_stand @ T_twist_lock_pos @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-#     T_head_rot = T_tool_stand @ T_twist_lock_rotate @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-#     T_head_rot1 = T_tool_stand @ T_twist_lock_rotate1 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-#     T_head_rot2 = T_tool_stand @ T_twist_lock_rotate2 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+    T_head_pos = T_tool_stand @ T_twist_lock_pos @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+    T_head_rot = T_tool_stand @ T_twist_lock_rotate @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+    T_head_rot1 = T_tool_stand @ T_twist_lock_rotate1 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+    T_head_rot2 = T_tool_stand @ T_twist_lock_rotate2 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
 
-#     # Routine
-#     # robot.MoveJ(target, blocking=True)
-#     RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
-#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
-#     # robot.MoveJ(rdk.Mat(twist_lock_align), blocking=True)
-#     robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
-#     time.sleep(1)
-#     robot.MoveJ(rdk.Mat(T_head_rot.tolist()), blocking=True)
-#     time.sleep(1)
-#     for i in range(90,135+1,9):
-#         tl_rot_l = np.array([14.9, 64.9, 201.0])
-#         tl_rot_adj = np.array([0, 0, -10])
-#         twist_lock_alphai = -i/180 * np.pi
-#         T_twist_lock_rotatei = np.array([[ 0.0,    np.cos(twist_lock_alphai),    np.sin(twist_lock_alphai),   tl_rot_l[0] + tl_rot_adj[0] ],
-#                                     [ 0.0,   -np.sin(twist_lock_alphai),    np.cos(twist_lock_alphai),   tl_rot_l[1] + tl_rot_adj[1] ],
-#                                     [ 1.0,                          0.0,                          0.0,   tl_rot_l[2] + tl_rot_adj[2] ],
-#                                     [ 0.0,                          0.0,                          0.0,                      1.000000 ]])
-#         T_head_roti = T_tool_stand @ T_twist_lock_rotatei @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-#         robot.MoveL(rdk.Mat(T_head_roti.tolist()), blocking=True)
+    # Routine
+    # robot.MoveJ(target, blocking=True)
+    RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
+    robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
+    # robot.MoveJ(rdk.Mat(twist_lock_align), blocking=True)
+    robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
+    time.sleep(1)
+    robot.MoveJ(rdk.Mat(T_head_rot.tolist()), blocking=True)
+    time.sleep(1)
+    for i in range(90,135+1,9):
+        tl_rot_l = np.array([14.9, 64.9, 201.0])
+        tl_rot_adj = np.array([0, 0, -10])
+        twist_lock_alphai = -i/180 * np.pi
+        T_twist_lock_rotatei = np.array([[ 0.0,    np.cos(twist_lock_alphai),    np.sin(twist_lock_alphai),   tl_rot_l[0] + tl_rot_adj[0] ],
+                                    [ 0.0,   -np.sin(twist_lock_alphai),    np.cos(twist_lock_alphai),   tl_rot_l[1] + tl_rot_adj[1] ],
+                                    [ 1.0,                          0.0,                          0.0,   tl_rot_l[2] + tl_rot_adj[2] ],
+                                    [ 0.0,                          0.0,                          0.0,                      1.000000 ]])
+        T_head_roti = T_tool_stand @ T_twist_lock_rotatei @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+        robot.MoveL(rdk.Mat(T_head_roti.tolist()), blocking=True)
 
-#     for i in range(135,90-1,-9):
-#         tl_rot_l = np.array([14.9, 64.9, 201.0])
-#         tl_rot_adj = np.array([0, 0, -10])
-#         twist_lock_alphai = -i/180 * np.pi
-#         T_twist_lock_rotatei = np.array([[ 0.0,    np.cos(twist_lock_alphai),    np.sin(twist_lock_alphai),   tl_rot_l[0] + tl_rot_adj[0] ],
-#                                     [ 0.0,   -np.sin(twist_lock_alphai),    np.cos(twist_lock_alphai),   tl_rot_l[1] + tl_rot_adj[1] ],
-#                                     [ 1.0,                          0.0,                          0.0,   tl_rot_l[2] + tl_rot_adj[2] ],
-#                                     [ 0.0,                          0.0,                          0.0,                      1.000000 ]])
-#         T_head_roti = T_tool_stand @ T_twist_lock_rotatei @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-#         robot.MoveL(rdk.Mat(T_head_roti.tolist()), blocking=True)
+    for i in range(135,90-1,-9):
+        tl_rot_l = np.array([14.9, 64.9, 201.0])
+        tl_rot_adj = np.array([0, 0, -10])
+        twist_lock_alphai = -i/180 * np.pi
+        T_twist_lock_rotatei = np.array([[ 0.0,    np.cos(twist_lock_alphai),    np.sin(twist_lock_alphai),   tl_rot_l[0] + tl_rot_adj[0] ],
+                                    [ 0.0,   -np.sin(twist_lock_alphai),    np.cos(twist_lock_alphai),   tl_rot_l[1] + tl_rot_adj[1] ],
+                                    [ 1.0,                          0.0,                          0.0,   tl_rot_l[2] + tl_rot_adj[2] ],
+                                    [ 0.0,                          0.0,                          0.0,                      1.000000 ]])
+        T_head_roti = T_tool_stand @ T_twist_lock_rotatei @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
+        robot.MoveL(rdk.Mat(T_head_roti.tolist()), blocking=True)
 
-#     robot.MoveJ(rdk.Mat(T_head_rot.tolist()), blocking=True)
-#     robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
+    robot.MoveJ(rdk.Mat(T_head_rot.tolist()), blocking=True)
+    robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
 
-#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
-#     RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
+    robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
+    RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
 
 #endregion
 
@@ -738,32 +738,32 @@ T_porta_rot = np.array([[np.cos(np.pi/180 * -50), -np.sin(np.pi/180 * -50), 0, 0
                         [0,                     0,                      1, 0],
                         [0,                     0,                      0, 1]])
 
-# ------------- Change tool frame  --------------- #
-def coffee_machine_portafilter_routine():
+# # ------------- Change tool frame  --------------- #
+# def coffee_machine_portafilter_routine():
 
-    twist_lock_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
+#     twist_lock_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
 
-    T_rot_45 = T_tool_stand @ T_porta_rot_45
-    T_rot_tool_frame = T_tool_stand @ T_porta_on
-    T_pf_tool_so = T_tool_stand @ T_pf_so @ np.linalg.inv(T_porta_pose_tool) @ np.linalg.inv(T_porta_rot)
-    T_pf_tool_so_tool_frame = T_tool_stand @ T_pf_so
+#     T_rot_45 = T_tool_stand @ T_porta_rot_45
+#     T_rot_tool_frame = T_tool_stand @ T_porta_on
+#     T_pf_tool_so = T_tool_stand @ T_pf_so @ np.linalg.inv(T_porta_pose_tool) @ np.linalg.inv(T_porta_rot)
+#     T_pf_tool_so_tool_frame = T_tool_stand @ T_pf_so
 
-    #Pickup portafilter tool    
-    # RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
-    robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
-    robot.MoveJ(rdk.Mat(T_pf_tool_so.tolist()), blocking=True)
-    portafilter_cup = RDK.Item('Portafilter Tool')
-    robot.setPoseTool(portafilter_cup)
-    robot.MoveJ(rdk.Mat(T_pf_tool_so_tool_frame.tolist()), blocking=True)
-    robot.MoveL(rdk.Mat(T_rot_tool_frame.tolist()), blocking=True)
-    robot.MoveL(rdk.Mat(T_rot_45.tolist()), blocking=True)
-    robot.MoveL(rdk.Mat(T_rot_tool_frame.tolist()), blocking=True)
-    master = RDK.Item('Master Tool')
-    robot.setPoseTool(master)
-    robot.MoveJ(rdk.Mat(T_pf_tool_so.tolist()), blocking=True)
-    robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
-    time.sleep(10)
-    # RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
+#     #Pickup portafilter tool    
+#     # RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
+#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
+#     robot.MoveJ(rdk.Mat(T_pf_tool_so.tolist()), blocking=True)
+#     portafilter_cup = RDK.Item('Portafilter Tool')
+#     robot.setPoseTool(portafilter_cup)
+#     robot.MoveJ(rdk.Mat(T_pf_tool_so_tool_frame.tolist()), blocking=True)
+#     robot.MoveL(rdk.Mat(T_rot_tool_frame.tolist()), blocking=True)
+#     robot.MoveL(rdk.Mat(T_rot_45.tolist()), blocking=True)
+#     robot.MoveL(rdk.Mat(T_rot_tool_frame.tolist()), blocking=True)
+#     master = RDK.Item('Master Tool')
+#     robot.setPoseTool(master)
+#     robot.MoveJ(rdk.Mat(T_pf_tool_so.tolist()), blocking=True)
+#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
+#     time.sleep(10)
+#     # RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
 # #endregion
 
 # ------------- Tool Stand --------------- #
