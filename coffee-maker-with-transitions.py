@@ -493,52 +493,63 @@ def coffee_grinder_latch_routine():
 #endregion
 #endregion
 
-# ------------- Coffee Machine --------------- #
+""" ---------------------------------------------- """
+""" --------------- Coffee Machine --------------- """
+""" ---------------------------------------------- """
 #region Coffee Machine
-cm_point_g = np.array([-580.4, -444.7, 350.6])
-cm_ref_g   = np.array([-368.4, -389.0, 350.6])
-cm_diff    = normalise(cm_point_g - cm_ref_g)
+cm_point_g = np.array([-580.4, -444.7, 350.6]) # Reference point in global coordinates
+cm_ref_g   = np.array([-368.4, -389.0, 350.6]) # Frame origin in global coordinates
+cm_diff    = normalise(cm_point_g - cm_ref_g)  # Direction vector in local coordinates
 
-cm_cTheta = np.dot(cm_diff, yDir)
-cm_sTheta = -1 * np.dot(cm_diff, xDir)
+cm_cTheta = np.dot(cm_diff, yDir)              # Reference frame rotation component (cos(theta))
+cm_sTheta = -1 * np.dot(cm_diff, xDir)         # Reference frame rotation component (sin(theta))
 
-cm_theta = 50/180 * np.pi
+cm_theta = 50/180 * np.pi                      # Mark
+
+# Transformation matrix from the UR5 reference frame to the coffee machine reference frame
 T_coffee_machine = np.array([[ cm_cTheta, -1 * cm_sTheta,     0.000000,   cm_ref_g[0]],
                              [ cm_sTheta,      cm_cTheta,     0.000000,   cm_ref_g[1]],
                              [ 0.0000000,        0.000000,    1.000000,   cm_ref_g[2]],
                              [ 0.0000000,        0.000000,    0.000000,      1.000000]])
 
 #region Button Transforms
-cm_but_off_l = np.array([51, 35.25, -30.9])
-cm_but_off_adj = np.array([-3, 0, 15])                                 
+cm_but_off_l = np.array([51, 35.25, -30.9])    # Local position of the off state of the button
+cm_but_off_adj = np.array([-3, 0, 15])         # Minor adjustments for the button off position
+
+# Transformation matrix from the coffee machine reference frame to the button off reference frame
 T__coffee_machine_button_off = np.array([[ 0.0,  np.cos(cm_theta),    -np.sin(cm_theta),  cm_but_off_l[0] + cm_but_off_adj[0] ],
                                          [ 0.0,  np.sin(cm_theta),     np.cos(cm_theta),  cm_but_off_l[1] + cm_but_off_adj[1] ],
                                          [ 1.0,               0.0,                  0.0,  cm_but_off_l[2] + cm_but_off_adj[2] ],
                                          [ 0.0,               0.0,                  0.0,                                  1.0 ]])
 
-cm_but_on_l = np.array([51, 35.25, -44.0])
-cm_but_on_adj = np.array([-3, 0, 13])  
+cm_but_on_l = np.array([51, 35.25, -44.0])     # Local position of the on state of the button
+cm_but_on_adj = np.array([-3, 0, 13])          # Minor adjustments for the button on position
+
+# Transformation matrix from the coffee machine reference frame to the button on reference frame
 T__coffee_machine_button_on = np.array([[ 0.0,     np.cos(cm_theta),    -np.sin(cm_theta),  cm_but_on_l[0] + cm_but_on_adj[0] ],
                                         [ 0.0,     np.sin(cm_theta),     np.cos(cm_theta),  cm_but_on_l[1] + cm_but_on_adj[1] ],
                                         [ 1.0,                  0.0,                  0.0,  cm_but_on_l[2] + cm_but_on_adj[2] ],
                                         [ 0.0,                  0.0,                  0.0,                                1.0 ]])
 
-cm_but_so_l = np.array([60.0, 35.25, -38.0])
-cm_but_so_adj = np.array([5, 0, 15])
+cm_but_so_l = np.array([60.0, 35.25, -38.0])   # Button stand-off position in the coffee machine reference frame
+cm_but_so_adj = np.array([5, 0, 15])           # Minor adjustments for the button stand-off position
+
+# Transformation matrix from the coffee machine reference frame to the button stand-off reference frame
 T_machine_button_so = np.array([[ 0.0,     np.cos(cm_theta),    -np.sin(cm_theta),   cm_but_so_l[0] + cm_but_so_adj[0] ],
                                 [ 0.0,     np.sin(cm_theta),     np.cos(cm_theta),   cm_but_so_l[1] + cm_but_so_adj[1] ],
                                 [ 1.0,                  0.0,                  0.0,   cm_but_so_l[2] + cm_but_so_adj[2] ],
                                 [ 0.0,                  0.0,                  0.0,                                1.0] ])
 
+# Mark this stuff
 cmp_theta = 20/180 * np.pi
-cup_height = 80
+cup_height = 80                                 
 cm_platform = np.array([-10, 72, -290+cup_height]) #-12.68, 72, -290+cup_height
 cm_platform_adj = np.array([0, 0, 9.5])
 T_coffee_machine_platform = np.array([[         0,           np.cos(cmp_theta),     -np.sin(cmp_theta),   cm_platform[0] + cm_platform_adj[0]],
                                       [       0.0,       np.sin(cmp_theta),    np.cos(cmp_theta),   cm_platform[1] + cm_platform_adj[1]],
                                       [ 1.0000000,       0.000000,    0.000000,   cm_platform[2] + cm_platform_adj[2]],
                                       [ 0.0000000,       0.000000,    0.000000,                              1.000000]])
-
+# Mark this too
 cm_platform_so = np.array([-10, 72, -290+cup_height]) #-12.68, 72, -290+cup_height
 fiddle = 120
 cm_platform_adj_so = np.array([0, 0, 7])
@@ -552,63 +563,32 @@ T_coffee_machine_platform_so = np.array([[         0,           np.cos(cmp_theta
 
 #region Routines
 def coffee_machine_button_routine():
+    """Routine to press the coffee machine buttons"""
 
-    coffee_machine_but_so_angles = np.array([-140.247036, -82.198223, -110.912461, -166.889316, -114.967982, 140.000000])
-    coffee_machine_but_intermediate_angles = np.array([-118.810000, -61.780000, -123.560000, -179.410000, -68.910000, 75.120000])  #-136.630000, -54.650000, -142.570000, -153.640000, -71.090000, 75.120000
+    coffee_machine_but_so_angles = np.array([-140.247036, -82.198223, -110.912461, -166.889316, -114.967982, 140.000000])           # Stand-off orientation
+    coffee_machine_but_intermediate_angles = np.array([-118.810000, -61.780000, -123.560000, -179.410000, -68.910000, 75.120000])   # Transition orientation
     
-    T_but_off = T_coffee_machine @ T__coffee_machine_button_off @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_tool_rot)
-    T_but_on = T_coffee_machine @ T__coffee_machine_button_on @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_tool_rot)
-    T_but_so = T_coffee_machine @ T_machine_button_so @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_tool_rot)
+    T_but_off = T_coffee_machine @ T__coffee_machine_button_off @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_tool_rot)          # Global transformation matrix for the button off pose
+    T_but_on = T_coffee_machine @ T__coffee_machine_button_on @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_tool_rot)            # Global transformation matrix for the button on pose
+    T_but_so = T_coffee_machine @ T_machine_button_so @ np.linalg.inv(T_push_button) @ np.linalg.inv(T_tool_rot)                    # Global transformation matrix for the button stand-off pose
 
 
-    # Routine
-    # robot.MoveJ(target, blocking=True)
-    RDK.RunProgram("Grinder Tool Attach (Tool Stand)", True)
-    robot.MoveJ(rdk.Mat(coffee_machine_but_intermediate_angles), blocking=True)
-    robot.MoveJ(rdk.Mat(coffee_machine_but_so_angles), blocking=True)
-    robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)
-    # time.sleep(1)
-    robot.MoveL(rdk.Mat(T_but_off.tolist()), blocking=True)
-    robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)
-    time.sleep(10)
-    robot.MoveL(rdk.Mat(T_but_on.tolist()), blocking=True)
-    robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)
-    # time.sleep(4)
-    robot.MoveJ(rdk.Mat(coffee_machine_but_intermediate_angles), blocking=True)
-    RDK.RunProgram("Grinder Tool Detach (Tool Stand)", True)
-
-
-# ------------- MoveC --------------- #
-# def coffee_machine_portafilter_routine():
-
-#     twist_lock_align = np.array([-181.514191, -85.515077, 227.735903, -133.465121, -120.965899, 144.530984])
-#     twist_lock_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
-
-#     T_head_pos = T_tool_stand @ T_twist_lock_pos @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-#     T_head_rot = T_tool_stand @ T_twist_lock_rotate @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-#     T_head_rot1 = T_tool_stand @ T_twist_lock_rotate1 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-#     T_head_rot2 = T_tool_stand @ T_twist_lock_rotate2 @ np.linalg.inv(T_pf_head) @ np.linalg.inv(T_tool_rot)
-
-#     # Routine
-#     # robot.MoveJ(target, blocking=True)
-#     RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
-#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
-#     # robot.MoveJ(rdk.Mat(twist_lock_align), blocking=True)
-#     robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
-#     time.sleep(1)
-#     robot.MoveJ(rdk.Mat(T_head_rot.tolist()), blocking=True)
-#     time.sleep(1)
-#     robot.MoveC(rdk.Mat(T_head_rot1.tolist()),rdk.Mat(T_head_rot2.tolist()), blocking=True)
-#     time.sleep(1)
-#     robot.MoveC(rdk.Mat(T_head_rot1.tolist()),rdk.Mat(T_head_rot.tolist()), blocking=True)
-#     robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
-#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
-#     RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
+    RDK.RunProgram("Grinder Tool Attach (Tool Stand)", True)                        # Attach the grinder tool
+    robot.MoveJ(rdk.Mat(coffee_machine_but_intermediate_angles), blocking=True)     # Move to the transition pose
+    robot.MoveJ(rdk.Mat(coffee_machine_but_so_angles), blocking=True)               # Move to the button stand-off pose
+    robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)                          # Move to the button stand-off pose
+    robot.MoveL(rdk.Mat(T_but_off.tolist()), blocking=True)                         # Turn the switch off - Mark is this the right way around? surely its on first
+    robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)                          # Return to the stand-off pose
+    time.sleep(10)                                                                  # Pause as required
+    robot.MoveL(rdk.Mat(T_but_on.tolist()), blocking=True)                          # Turn the switch on
+    robot.MoveJ(rdk.Mat(T_but_so.tolist()), blocking=True)                          # Return to the stand-off pose
+    robot.MoveJ(rdk.Mat(coffee_machine_but_intermediate_angles), blocking=True)     # Return to the transition pose
+    RDK.RunProgram("Grinder Tool Detach (Tool Stand)", True)                        # Detach the grinder tool
 
 #endregion
 
 # ------------- MoveL --------------- #
-def coffee_machine_portafilter_routine():
+def coffee_machine_portafilter_routine(): # Mark - Might leave this function to you
 
     twist_lock_align = np.array([-181.514191, -85.515077, 227.735903, -133.465121, -120.965899, 144.530984])
     twist_lock_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
@@ -719,9 +699,11 @@ T_porta_rot = np.array([[np.cos(np.pi/180 * -50), -np.sin(np.pi/180 * -50), 0, 0
 #     # RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
 # #endregion
 
-# ------------- Tool Stand --------------- #
+""" ---------------------------------------------- """
+""" ----------------- Tool stand ----------------- """
+""" ---------------------------------------------- """
 #region Tool Stand
-alpha_bt = np.arctan(1)-np.arctan(89.1/155.9)
+alpha_bt = np.arctan(1)-np.arctan(89.1/155.9) # Mark heres another one for you darling. Why did we use this and not the bit below again?
 T_tool_stand = np.array([[    np.cos(alpha_bt),     np.sin(alpha_bt),     0.000000,   -556.500000 ],
                         [-np.sin(alpha_bt),    np.cos(alpha_bt),     0.000000,  -77.400000 ],
                         [0.000000,     0.000000,     1.000000,   19.050000 ],
@@ -741,7 +723,9 @@ T_tool_stand = np.array([[    np.cos(alpha_bt),     np.sin(alpha_bt),     0.0000
 #      [0.000000,     0.000000,     0.000000,     1.000000 ]])
 #endregion
 
-# ------------- Twist Lock --------------- #
+""" ---------------------------------------------- """
+""" ----------------- Twist lock ----------------- """
+""" ---------------------------------------------- """
 #region Twist Lock
 tl_pos_l = np.array([14.9, 64.9, 180.0])
 tl_pos_adj = np.array([0, 0, 0])
