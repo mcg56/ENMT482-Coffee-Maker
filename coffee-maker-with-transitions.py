@@ -600,7 +600,7 @@ def coffee_machine_portafilter_routine(): # Mark - Might leave this function to 
 
     # Routine
     # robot.MoveJ(target, blocking=True)
-    RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
+    RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True) # Mark - check this in the sims. Need to be off? Idk what we want to leave it as for submission
     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
     # robot.MoveJ(rdk.Mat(twist_lock_align), blocking=True)
     robot.MoveJ(rdk.Mat(T_head_pos.tolist()), blocking=True)
@@ -671,32 +671,6 @@ T_porta_rot = np.array([[np.cos(np.pi/180 * -50), -np.sin(np.pi/180 * -50), 0, 0
                         [0,                     0,                      1, 0],
                         [0,                     0,                      0, 1]])
 
-# # ------------- Change tool frame  --------------- #
-# def coffee_machine_portafilter_routine():
-
-#     twist_lock_intermediate_angles = np.array([-87.920000, -74.850000, -139.010000, -135.450000, 20.200000, -229.820000]) 
-
-#     T_rot_45 = T_tool_stand @ T_porta_rot_45
-#     T_rot_tool_frame = T_tool_stand @ T_porta_on
-#     T_pf_tool_so = T_tool_stand @ T_pf_so @ np.linalg.inv(T_porta_pose_tool) @ np.linalg.inv(T_porta_rot)
-#     T_pf_tool_so_tool_frame = T_tool_stand @ T_pf_so
-
-#     #Pickup portafilter tool    
-#     # RDK.RunProgram("Portafilter Tool Attach (Tool Stand)", True)
-#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
-#     robot.MoveJ(rdk.Mat(T_pf_tool_so.tolist()), blocking=True)
-#     portafilter_cup = RDK.Item('Portafilter Tool')
-#     robot.setPoseTool(portafilter_cup)
-#     robot.MoveJ(rdk.Mat(T_pf_tool_so_tool_frame.tolist()), blocking=True)
-#     robot.MoveL(rdk.Mat(T_rot_tool_frame.tolist()), blocking=True)
-#     robot.MoveL(rdk.Mat(T_rot_45.tolist()), blocking=True)
-#     robot.MoveL(rdk.Mat(T_rot_tool_frame.tolist()), blocking=True)
-#     master = RDK.Item('Master Tool')
-#     robot.setPoseTool(master)
-#     robot.MoveJ(rdk.Mat(T_pf_tool_so.tolist()), blocking=True)
-#     robot.MoveJ(rdk.Mat(twist_lock_intermediate_angles), blocking=True)
-#     time.sleep(10)
-#     # RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
 # #endregion
 
 """ ---------------------------------------------- """
@@ -727,8 +701,10 @@ T_tool_stand = np.array([[    np.cos(alpha_bt),     np.sin(alpha_bt),     0.0000
 """ ----------------- Twist lock ----------------- """
 """ ---------------------------------------------- """
 #region Twist Lock
-tl_pos_l = np.array([14.9, 64.9, 180.0])
-tl_pos_adj = np.array([0, 0, 0])
+tl_pos_l = np.array([14.9, 64.9, 180.0])    # Twist lock position in global coordinates
+tl_pos_adj = np.array([0, 0, 0])            # Minor adjustments to the twist lock position
+
+# Transformation matrix from the UR5 reference frame to the twist lock pose
 T_twist_lock_pos = np.array([[ 0.0,   0.0,    -1.0,   tl_pos_l[0] + tl_pos_adj[0] ],
                              [ 0.0,   1.0,     0.0,   tl_pos_l[1] + tl_pos_adj[1] ],
                              [ 1.0,   0.0,     0.0,   tl_pos_l[2] + tl_pos_adj[2] ],
@@ -741,7 +717,7 @@ T_twist_lock_rotate = np.array([[ 0.0,   0.0,    -1.0,   tl_rot_l[0] + tl_rot_ad
                                 [ 1.0,   0.0,     0.0,   tl_rot_l[2] + tl_rot_adj[2] ],
                                 [ 0.0,   0.0,     0.0,                     1.000000] ])
 
-twist_lock_alpha = -135/180 * np.pi
+twist_lock_alpha = -135/180 * np.pi # Mark - got some reverse numbering?
 T_twist_lock_rotate2 = np.array([[ 0.0,     np.cos(twist_lock_alpha),     np.sin(twist_lock_alpha),   tl_rot_l[0] + tl_rot_adj[0] ],
                                  [ 0.0,    -np.sin(twist_lock_alpha),     np.cos(twist_lock_alpha),   tl_rot_l[1] + tl_rot_adj[1] ],
                                  [ 1.0,                          0.0,                          0.0,   tl_rot_l[2] + tl_rot_adj[2] ],
@@ -754,92 +730,114 @@ T_twist_lock_rotate1 = np.array([[ 0.0,    np.cos(twist_lock_alpha2),    np.sin(
                                  [ 0.0,                          0.0,                          0.0,                      1.000000 ]])
 
 def tamp_stand_to_twist_lock():
-    transition_pose1 = np.array([-87.430000, -79.730000, -153.320000, -119.460000, -101.110000, -219.990000])
-    transition_pose2 = np.array([-162.000000, -79.730000, -153.320000, -119.460000, -101.110000, -219.990000])
+    """Routine to move from the tamp stand to the twist lock station"""
+    transition_pose1 = np.array([-87.430000, -79.730000, -153.320000, -119.460000, -101.110000, -219.990000])   # First transition orientation 
+    transition_pose2 = np.array([-162.000000, -79.730000, -153.320000, -119.460000, -101.110000, -219.990000])  # Second transition orientation
 
-    ts_poses = tamp_stand_poses()
+    ts_poses = tamp_stand_poses()                                       # Retrieve the tamp stand poses
 
-    robot.MoveL(rdk.Mat(ts_poses["pose_tamp_stand_so"]))
-    time.sleep(1)
-    robot.MoveC(rdk.Mat(transition_pose1), rdk.Mat(transition_pose2))
-    time.sleep(1)
+    robot.MoveL(rdk.Mat(ts_poses["pose_tamp_stand_so"]))                # Move to the tamp stand stand-off pose 
+    robot.MoveC(rdk.Mat(transition_pose1), rdk.Mat(transition_pose2))   # Move through the transition poses to the twist lock station
 
 
 #endregion
 
-# ------------- General Tool --------------- #
+""" ---------------------------------------------- """
+""" ---------------- General Tool ---------------- """
+""" ---------------------------------------------- """
 #region General Tool
-theta_gt = 50*(np.pi/180)
+theta_gt = 50*(np.pi/180) # Angle offset of the tool piece wrt the UR5
+
+# Transformation matrix to rotate the tool by the above angle
 T_tool_rot = np.array([[  np.cos(theta_gt),     np.sin(theta_gt),     0.0,    0.0 ],
                        [ -np.sin(theta_gt),     np.cos(theta_gt),     0.0,    0.0 ],
                        [               0.0,                  0.0,     1.0,    0.0 ],
                        [               0.0,                  0.0,     0.0,    1.0 ]])
 #endregion
 
-# ------------- Grinder Tool --------------- #
+""" ---------------------------------------------- """
+""" ---------------- Grinder Tool ---------------- """
+""" ---------------------------------------------- """
 #region Grinder Tool
-T_push_button = np.array([[1.0,   0.0,   0.0,     0.0 ],
-                          [0.0,   1.0,   0.0,     0.0 ],
-                          [0.0,   0.0,   1.0,  102.82 ],
-                          [0.0,   0.0,   0.0,     1.0 ]])
+gt_push_but_l = np.array([0, 0, 102.82]) # Local position of the push button
 
-T_pully_bit = np.array([[1.0,   0.0,   0.0,   -45.0 ],
-                        [0.0,   1.0,   0.0,     0.0 ],
-                        [0.0,   0.0,   1.0,   67.06 ],
-                        [0.0,   0.0,   0.0,     1.0 ]])
-#endregion
+# Transformation matrix from the grinder tool reference frame to the push button reference frame
+T_push_button = np.array([[1.0,   0.0,   0.0,     gt_push_but_l[0] ],
+                          [0.0,   1.0,   0.0,     gt_push_but_l[1] ],
+                          [0.0,   0.0,   1.0,     gt_push_but_l[2] ],
+                          [0.0,   0.0,   0.0,                  1.0 ]])
 
-# ------------- Porta Filter Tool --------------- #
-#region Portafilter Tool
-pf_theta = -7.35 * np.pi/180
-T_pf_head     = np.array([[     np.cos(pf_theta),     0.0,  np.sin(pf_theta),     4.71 ],
-                          [                  0.0,     1.0,               0.0,      0.0 ],
-                          [-1 * np.sin(pf_theta),     0.0,  np.cos(pf_theta),   144.76 ], 
-                          [                  0.0,     0.0,               0.0,      1.0 ]])
+gt_pully_bit_l = np.array([-45.0, 0.0, 67.06]) # Local position of the pulling tool
 
-T_pf_base     = np.array([[     np.cos(pf_theta),     0.0,  np.sin(pf_theta),    -32.0 ],
-                          [                  0.0,     1.0,               0.0,      0.0 ],
-                          [-1 * np.sin(pf_theta),     0.0,  np.cos(pf_theta),    27.56 ],
-                          [                  0.0,     0.0,               0.0,      1.0 ]])
-
-T_pf_top_edge =  T_pf_head @ np.array([[ 1.0,  0.0,  0.0,  22.0 ],
-                                       [ 0.0,  1.0,  0.0,   0.0 ],
-                                       [ 0.0,  0.0,  1.0,   0.0 ], 
-                                       [ 0.0,  0.0,  0.0,   1.0 ]])
-#endregion
-
-# ------------- Cup Tool --------------- #
-#region Portafilter Tool
-T_cup_tool = np.array([[1.0,   0.0,   0.0,     -47.0 ],
-                          [0.0,   1.0,   0.0,     0.0 ],
-                          [0.0,   0.0,   1.0,  186.11 ],
-                          [0.0,   0.0,   0.0,     1.0 ]])
+# Transformation matrix from the grinder tool reference frame to the pulling tool reference frame
+T_pully_bit = np.array([[1.0,   0.0,   0.0,   gt_pully_bit_l[0] ],
+                        [0.0,   1.0,   0.0,   gt_pully_bit_l[1] ],
+                        [0.0,   0.0,   1.0,   gt_pully_bit_l[2] ],
+                        [0.0,   0.0,   0.0,                 1.0 ]])
 #endregion
 
 """ ---------------------------------------------- """
-""" ----------- -- Define Motion  - -------------- """
+""" -------------- Portafilter Tool -------------- """
+""" ---------------------------------------------- """
+#region Portafilter Tool
+pf_theta = -7.35 * np.pi/180                # Angle tilt of the portafilter head
+pf_head_l = np.array([4.71, 0.0, 144.76])   # Local position of the portafilter head
+
+# Tranformation matrix from the portafilter tool reference frame to the head reference frame
+T_pf_head     = np.array([[     np.cos(pf_theta),     0.0,  np.sin(pf_theta),     pf_head_l[0] ],
+                          [                  0.0,     1.0,               0.0,     pf_head_l[1] ],
+                          [-1 * np.sin(pf_theta),     0.0,  np.cos(pf_theta),     pf_head_l[2] ], 
+                          [                  0.0,     0.0,               0.0,              1.0 ]])
+
+pf_base_l = np.array([-32.0, 0.0, 27.56])   # Local position of the portafilter base
+
+# Tranformation matrix from the portafilter tool reference frame to the base reference frame
+T_pf_base     = np.array([[     np.cos(pf_theta),     0.0,  np.sin(pf_theta),    pf_base_l[0] ],
+                          [                  0.0,     1.0,               0.0,    pf_base_l[1] ],
+                          [-1 * np.sin(pf_theta),     0.0,  np.cos(pf_theta),    pf_base_l[2] ],
+                          [                  0.0,     0.0,               0.0,             1.0 ]])
+
+pf_rim_l = np.array([22.0, 0.0, 0.0]) # Local position of the rim of the portafilter
+
+# Transformation matrix from the portafilter tool reference frame to the rim reference frame
+T_pf_top_edge =  T_pf_head @ np.array([[ 1.0,  0.0,  0.0,  pf_rim_l[0] ],
+                                       [ 0.0,  1.0,  0.0,  pf_rim_l[1] ],
+                                       [ 0.0,  0.0,  1.0,  pf_rim_l[2] ], 
+                                       [ 0.0,  0.0,  0.0,          1.0 ]])
+#endregion
+
+""" ---------------------------------------------- """
+""" ------------------- Cup Tool ----------------- """
+""" ---------------------------------------------- """
+#region Portafilter Tool
+cp_centre_l = np.array([-47.0, 0.0, 186.11]) # Local position of the cup tool centre
+
+# Transformation matrix from the cup tool reference from to the centre reference frame
+T_cup_tool = np.array([[1.0,   0.0,   0.0,     cp_centre_l[0] ],
+                       [0.0,   1.0,   0.0,     cp_centre_l[1] ],
+                       [0.0,   0.0,   1.0,     cp_centre_l[2] ],
+                       [0.0,   0.0,   0.0,                1.0 ]])
+#endregion
+
+""" ---------------------------------------------- """
+""" -------------- Define Motion  ---------------- """
 """ ---------------------------------------------- """
 def main():
     
-    robot.MoveJ(target, blocking=True)
+    robot.MoveJ(target, blocking=True)              # Start the robot at home position       
 
-    coffee_grinder_place_portafilter_routine() # Done
-    coffee_grinder_button_routine() # Done
-    coffee_grinder_latch_routine() # Done
+    coffee_grinder_place_portafilter_routine()      # Place the portafilter tool in the grinder
+    coffee_grinder_button_routine()                 # Press the grinder buttons
+    coffee_grinder_latch_routine()                  # Pull the grinder latch
+    coffee_grinder_pickup_portafilter_routine()     # Pickup the portafilter from the grinder
+    tamp_stand_scrape_and_tamp_routine()            # Tamp and scrape the coffee
+    tamp_stand_to_twist_lock()                      # Move the portafilter to the twist lock location
+    coffee_machine_portafilter_routine()            # Place the portafilter in the simulated coffee machine
+    cup_to_coffee_machine()                         # Place the cup in the coffee machine
+    coffee_machine_button_routine()                 # Press the buttons on the coffee machine
+    cup_to_stand()                                  # Move the cup back to the stand
 
-    coffee_grinder_pickup_portafilter_routine() # Done
-    tamp_stand_scrape_and_tamp_routine() # Done
-    tamp_stand_to_twist_lock() # Done
-
-    coffee_machine_portafilter_routine() # Done the start but not the end
-    # RDK.RunProgram("Portafilter Tool Detach (Tool Stand)", True)
-    cup_to_coffee_machine() 
-    coffee_machine_button_routine()
-    cup_to_stand()
-
-    robot.MoveJ(target, blocking=True)
-
-    pass
+    robot.MoveJ(target, blocking=True)              # Return to the home position
 
 
 if __name__ == '__main__':
